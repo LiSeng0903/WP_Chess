@@ -1,4 +1,5 @@
 const DEBUG = true
+const CHECK_COLOR = 'w'
 const BOARD_LEN = 8
 
 class Game {
@@ -22,6 +23,9 @@ class Game {
 
         board[3][4].color = 'b'
         board[3][4].type = 'king'
+
+        board[2][2].color = 'b'
+        board[2][2].type = 'knight'
 
         return board
     }
@@ -341,6 +345,10 @@ class Game {
         // test knight 
         let knightPoses = Game.get_knight_pos_list( [kingX, kingY] )
         for ( let pos of knightPoses ) {
+            let possibleKnight = Game.get_info( pos, board )
+            if ( possibleKnight.color != checkClr && possibleKnight.type == 'knight' ) {
+                return true
+            }
         }
 
         // test rook & queen 
@@ -428,7 +436,7 @@ class Game {
         }
         this.check_pawn_transform()
 
-        console.log( Game.is_check( this.board, 'b' ) )
+        console.log( Game.is_check( this.board, CHECK_COLOR ) )
         return this.board
     }
 
