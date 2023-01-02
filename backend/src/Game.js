@@ -355,7 +355,7 @@ class Game {
         let upInfo = Game.get_straight_info( [kingX, kingY], -1, 0, board )
         let downInfo = Game.get_straight_info( [kingX, kingY], 1, 0, board )
         let leftInfo = Game.get_straight_info( [kingX, kingY], 0, -1, board )
-        let rightInfo = Game.get_straight_info( [kingX, kingY], 0, +1, board )
+        let rightInfo = Game.get_straight_info( [kingX, kingY], 0, 1, board )
 
         let infos = [upInfo, downInfo, leftInfo, rightInfo]
         for ( let info of infos ) {
@@ -365,6 +365,17 @@ class Game {
         }
 
         // test bishop & queen 
+        let upRightInfo = Game.get_straight_info( [kingX, kingY], -1, 1, board )
+        let upLeftInfo = Game.get_straight_info( [kingX, kingY], -1, -1, board )
+        let downRightInfo = Game.get_straight_info( [kingX, kingY], 1, 1, board )
+        let downLeftInfo = Game.get_straight_info( [kingX, kingY], 1, -1, board )
+
+        infos = [upRightInfo, upLeftInfo, downRightInfo, downLeftInfo]
+        for ( let info of infos ) {
+            if ( ( info.type == 'bishop' || info.type == 'queen' ) && ( info.color = checkClr == 'w' ? 'b' : 'w' ) ) {
+                return true
+            }
+        }
 
         // test king 
         return false
