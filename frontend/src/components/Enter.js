@@ -1,21 +1,36 @@
 import { Button, Checkbox, Form, Input } from 'antd'
 import { UserOutlined } from "@ant-design/icons"
+import { useChess } from "../containers/hooks/useChess"
 
-const Enter = ( { me, setName, roomNumber, setRoomNumber, onLogin } ) => {
+const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
+    const { login } = useChess()
+
+    const onFinish = ( values ) => {
+        setName( values.userName )
+        setRoomNumber( values.roomNumber )
+        login()
+    }
+
+    const onFinishFailed = ( errorInfo ) => {
+        setLoginError( true )
+    }
+
     return (
         <Form
             name="basic"
             labelCol={{
-                span: 8,
+                span: 10,
             }}
             wrapperCol={{
                 span: 16,
             }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
             <Form.Item
                 label="Username"
-                name="username"
+                name="userName"
                 rules={[
                     {
                         required: true,
@@ -50,28 +65,6 @@ const Enter = ( { me, setName, roomNumber, setRoomNumber, onLogin } ) => {
                 </Button>
             </Form.Item>
         </Form>
-        // <>
-        //     <Input
-        //         size="large"
-        //         style={{ width: 300, margin: 50 }}
-        //         prefix={<UserOutlined />}
-        //         placeholder="Enter your name"
-        //         value={me}
-        //         onChange={( e ) => setName( e.target.value )}
-        //         enterButton="Sign In"
-        //         onSearch={( name ) => onLogin( name )}
-        //     />
-        //     <Input.Search
-        //         size="large"
-        //         style={{ width: 300, margin: 50 }}
-        //         prefix={<UserOutlined />}
-        //         placeholder="Enter your name"
-        //         value={me}
-        //         onChange={( e ) => setName( e.target.value )}
-        //         enterButton="Sign In"
-        //         onSearch={( name ) => onLogin( name )}
-        //     />
-        // </>
     )
 }
 

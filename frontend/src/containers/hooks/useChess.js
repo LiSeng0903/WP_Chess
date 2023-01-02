@@ -34,8 +34,11 @@ const ChessContext = createContext(
         name: "", //player name
         setName: () => {},
 
-        roomNumber: 0,
+        roomNumber: 0, //play room number
         setRoomNumber: () => {},
+
+        loginError: Boolean, //determone if user has enter correct or valid info
+        setLoginError: () => {},
 
         preview: () => {},
         move: () => {}
@@ -52,8 +55,10 @@ const ChessProvider = ( props ) => {
     const [ winner, setWinner ] = useState( '' )
     const [ name, setName ] = useState( "" )
     const [ roomNumber, setRoomNumber ] = useState( 0 )
+    const [ loginError, setLoginError ] = useState( false )
 
 
+    // receiving
     clientWS.onmessage = ( byteString ) => {
         const { data } = byteString
         const [ task, response ] = JSON.parse( data )
@@ -117,6 +122,8 @@ const ChessProvider = ( props ) => {
         return winner
     }
 
+
+    // sending
     const preview = ( previewPos ) => {
         // get preview board 
         sendData( [ "preview", previewPos ] )
@@ -130,6 +137,10 @@ const ChessProvider = ( props ) => {
     const init = () => {
         // get initial board 
         sendData( [ 'init' ] )
+    }
+
+    const login = () => {
+        sendData( [ "login", { name, roomNumber } ] )
     }
 
     return (
@@ -160,6 +171,10 @@ const ChessProvider = ( props ) => {
                     roomNumber,
                     setRoomNumber,
 
+                    loginError,
+                    setLoginError,
+
+                    login,
                     preview,
                     move
                 }
