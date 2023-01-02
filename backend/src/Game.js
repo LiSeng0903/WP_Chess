@@ -523,6 +523,21 @@ class Game {
 
         // Get preview board 
         let avaList = Game.previewFunctions[pieceType]( prePos, this.board )
+        avaList = avaList.filter( ( avaPos ) => {
+            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+            let [preX, preY] = prePos
+            let [avaX, avaY] = avaPos
+
+            trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[preX][preY] ) )
+            trialBoard[preX][preY] = {
+                type: 'nothing',
+                color: 'nothing',
+                ava: false
+            }
+
+            return Game.is_check( trialBoard, this.turn ) == false
+        } )
+
         for ( let i = 0; i < avaList.length; i++ ) {
             let [x, y] = avaList[i]
             this.board[x][y].ava = true
