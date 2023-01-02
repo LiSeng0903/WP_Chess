@@ -1,36 +1,7 @@
 const BOARD_LEN = 8
 
 class Game {
-    // Static function & variables 
-    static keys = {
-        'pawn': {
-            'w': '♙',
-            'b': '♟'
-        },
-        'bishop': {
-            'w': '♗',
-            'b': '♝'
-        },
-        'rook': {
-            'w': '♖',
-            'b': '♜'
-        },
-        'knight': {
-            'w': '♘',
-            'b': '♞'
-        },
-        'queen': {
-            'w': '♕',
-            'b': '♛'
-        },
-        'king': {
-            'w': '♔',
-            'b': '♚'
-        },
-        'nothing': {
-            'nothing': ' '
-        }
-    }
+    // Static function
 
     static init_board = () => {
         let board = []
@@ -334,82 +305,6 @@ class Game {
         }
     }
 
-    init_board() {
-        for ( let i = 0; i < 8; i++ ) {
-            this.board.push( [] )
-            for ( let j = 0; j < 8; j++ ) {
-                this.board[i].push( {
-                    type: 'nothing',
-                    color: ( i == 0 || i == 1 ) ? 'b' : ( ( i == 6 || i == 7 ) ? 'w' : 'nothing' ),
-                    ava: false
-                }
-                )
-            }
-        }
-
-        this.board[0][0].type = 'rook'
-        this.board[0][1].type = 'knight'
-        this.board[0][2].type = 'bishop'
-        this.board[0][3].type = 'queen'
-        this.board[0][4].type = 'king'
-        this.board[0][5].type = 'bishop'
-        this.board[0][6].type = 'knight'
-        this.board[0][7].type = 'rook'
-        for ( let y = 0; y < 8; y++ ) {
-            this.board[1][y].type = 'pawn'
-        }
-
-        this.board[7][0].type = 'rook'
-        this.board[7][1].type = 'knight'
-        this.board[7][2].type = 'bishop'
-        this.board[7][3].type = 'queen'
-        this.board[7][4].type = 'king'
-        this.board[7][5].type = 'bishop'
-        this.board[7][6].type = 'knight'
-        this.board[7][7].type = 'rook'
-        for ( let y = 0; y < 8; y++ ) {
-            this.board[6][y].type = 'pawn'
-        }
-
-        if ( DEBUG_MODE ) {
-            this.board[POS[0]][POS[1]].type = TYPE
-            this.board[POS[0]][POS[1]].color = 'w'
-        }
-    }
-
-    draw_board( mode = 'type' ) {
-        for ( let i = 0; i < 19; i++ ) {
-            process.stdout.write( '-' )
-        }
-        process.stdout.write( '\n' )
-
-        for ( let x = 0; x < 8; x++ ) {
-            process.stdout.write( '| ' )
-            for ( let y = 0; y < 8; y++ ) {
-                let focusPiece = this.board[x][y]
-                if ( mode == 'type' ) {
-                    process.stdout.write( Game.keys[focusPiece.type][focusPiece.color] )
-                }
-                else if ( mode == 'ava' ) {
-                    if ( focusPiece.ava == true ) {
-                        process.stdout.write( 'O' )
-                    }
-                    else {
-                        process.stdout.write( '.' )
-                    }
-                }
-                process.stdout.write( ' ' )
-            }
-            process.stdout.write( '|' )
-            process.stdout.write( '\n' )
-        }
-
-        for ( let i = 0; i < 19; i++ ) {
-            process.stdout.write( '-' )
-        }
-        process.stdout.write( '\n' )
-    }
-
     move( from, to ) {
         this.clean_ava()
         let avaBoard = this.preview( from )
@@ -441,16 +336,20 @@ class Game {
         return this.board
     }
 
-    preview( previewPos ) {
+    preview( prePos ) {
         this.clean_ava()
-        if ( previewPos.length == 0 ) {
+
+        // Cancel preview ( previewPos = [] ) 
+        if ( prePos.length == 0 ) {
             return this.board
         }
 
-        let [x, y] = previewPos
-        let pieceType = this.board[x][y].type
+        // Preview position
+        let [row, col] = prePos
+        let pieceType = this.board[row][col].type
 
-        let avaList = Game.previewFunctions[pieceType]( x, y, this.board )
+        // Get preview board 
+        let avaList = Game.previewFunctions[pieceType]( row, col, this.board )
         for ( let i = 0; i < avaList.length; i++ ) {
             let [x, y] = avaList[i]
             this.board[x][y].ava = true
@@ -459,20 +358,20 @@ class Game {
     }
 
     clean_ava() {
-        for ( let x = 0; x < 8; x++ ) {
-            for ( let y = 0; y < 8; y++ ) {
-                this.board[x][y].ava = false
+        for ( let row = 0; row < BOARD_LEN; row++ ) {
+            for ( let col = 0; col < BOARD_LEN; col++ ) {
+                this.board[row][col].ava = false
             }
         }
     }
 
     check_pawn_transform() {
-        for ( let y = 0; y < 8; y++ ) {
-            if ( this.board[0][y].type == 'pawn' ) {
-                this.board[0][y].type = 'queen'
+        for ( let col = 0; col < BOARD_LEN; col++ ) {
+            if ( this.board[0][col].type == 'pawn' ) {
+                this.board[0][col].type = 'queen'
             }
-            if ( this.board[7][y].type == 'pawn' ) {
-                this.board[7][y].type = 'queen'
+            if ( this.board[7][col].type == 'pawn' ) {
+                this.board[7][col].type = 'queen'
             }
         }
     }
