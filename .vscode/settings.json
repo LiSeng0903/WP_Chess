@@ -1,4 +1,9 @@
 {
-    "editor.cursorBlinking": "expand",
-    "editor.cursorSmoothCaretAnimation": true
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+    "javascript.format.semicolons": "remove",
+    "javascript.preferences.quoteStyle": "double",
 }
