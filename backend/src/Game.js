@@ -1,7 +1,20 @@
+const DEBUG = true
 const BOARD_LEN = 8
 
 class Game {
     // Static function
+
+    static debug_init_board = () => {
+        let board = Game.init_board()
+
+        board[0][4].color = 'nothing'
+        board[0][4].color = 'nothing'
+
+        board[3][4].color = 'b'
+        board[3][4].type = 'king'
+
+        return board
+    }
 
     static init_board = () => {
         let board = []
@@ -285,8 +298,70 @@ class Game {
         return ( x >= 0 && x <= 7 && y >= 0 && y <= 7 )
     }
 
+    static is_check( board, checkClr ) {
+        // Get king positions
+        let [kingX, kingY] = [0, 0]
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                if ( board[x][y].color == checkClr && board[x][y].type == 'king' ) {
+                    kingX = x
+                    kingY = y
+                }
+            }
+        }
+
+        // test pawn 
+        if ( checkClr == 'b' ) {
+            if ( Game.get_type( kingX + 1, kingY - 1, board ) == 'pawn' ||
+                Game.get_type( kingX + 1, kingY + 1, board ) == 'pawn' ) {
+                return true
+            }
+        }
+        if ( checkClr == 'w' ) {
+            if ( Game.get_type( kingX - 1, kingY - 1, board ) == 'pawn' ||
+                Game.get_type( kingX - 1, kingY + 1, board ) == 'pawn' ) {
+                return true
+            }
+        }
+
+        // test knight 
+        knightPoses = Game.get_knight_pos_list( kingX, kingY )
+        for ( let pos of knightPoses ) {
+            console.log( knightPoses )
+        }
+
+        // test rook & queen 
+
+        // test bishop & queen 
+
+        // test king 
+        return false
+    }
+
+    static get_type( x, y, board ) {
+        if ( Game.is_in_range( [x, y] ) == false ) {
+            return 'nothing'
+        }
+        else {
+            return board[x][y].type
+        }
+    }
+
+    static get_knight_pos_list( x, y ) {
+        return [
+            [x + 1, y + 2],
+            [x - 1, y + 2],
+            [x + 1, y - 2],
+            [x - 1, y - 2],
+            [x + 2, y + 1],
+            [x - 2, y + 1],
+            [x + 2, y - 1],
+            [x - 2, y - 1],
+        ]
+    }
+
     constructor() {
-        this.board = Game.init_board()
+        this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
         this.turn = 'w'
         this.playerCnt = 0
 
@@ -331,8 +406,9 @@ class Game {
         else {
             this.turn = 'w'
         }
-
         this.check_pawn_transform()
+
+        console.log( Game.is_check( this.board, 'b' ) )
         return this.board
     }
 
