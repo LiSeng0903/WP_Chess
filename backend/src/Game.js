@@ -1,5 +1,5 @@
 const DEBUG = true
-const CHECK_COLOR = 'w'
+const CHECK_COLOR = 'b'
 const BOARD_LEN = 8
 
 class Game {
@@ -24,8 +24,8 @@ class Game {
         board[3][4].color = 'b'
         board[3][4].type = 'king'
 
-        board[2][2].color = 'b'
-        board[2][2].type = 'knight'
+        board[2][2].color = 'w'
+        board[2][2].type = 'rook'
 
         return board
     }
@@ -278,8 +278,8 @@ class Game {
 
     static queen_preview( prePos, board ) {
         let [preX, preY] = prePos
-        let avaList = Game.bishop_preview( preX, preY, board )
-        avaList = avaList.concat( Game.rook_preview( preX, preY, board ) )
+        let avaList = Game.bishop_preview( prePos, board )
+        avaList = avaList.concat( Game.rook_preview( prePos, board ) )
 
         return avaList
     }
@@ -352,6 +352,17 @@ class Game {
         }
 
         // test rook & queen 
+        let upInfo = Game.get_straight_info( [kingX, kingY], -1, 0, board )
+        let downInfo = Game.get_straight_info( [kingX, kingY], 1, 0, board )
+        let leftInfo = Game.get_straight_info( [kingX, kingY], 0, -1, board )
+        let rightInfo = Game.get_straight_info( [kingX, kingY], 0, +1, board )
+
+        let infos = [upInfo, downInfo, leftInfo, rightInfo]
+        for ( let info of infos ) {
+            if ( ( info.type == 'rook' || info.type == 'queen' ) && ( info.color = checkClr == 'w' ? 'b' : 'w' ) ) {
+                return true
+            }
+        }
 
         // test bishop & queen 
 
@@ -386,6 +397,27 @@ class Game {
             [x + 2, y - 1],
             [x - 2, y - 1],
         ]
+    }
+
+    static get_straight_pos( oriPos, delX, delY, board ) {
+        // Get the nearest position with piece along certain direction
+        // E.g. delX=0; delY=1 => get the nearest position with piece along right side of oriPos
+
+        let [x, y] = oriPos
+        while ( Game.is_in_range( [x, y] ) ) {
+            x += delX
+            y += delY
+            let info = Game.get_info( [x, y], board )
+            if ( info.type != 'nothing' ) {
+                return [x, y]
+            }
+        }
+        return [-1, -1]
+    }
+
+    static get_straight_info( oriPos, delX, delY, board ) {
+        let pos = Game.get_straight_pos( oriPos, delX, delY, board )
+        return Game.get_info( pos, board )
     }
 
     constructor() {
