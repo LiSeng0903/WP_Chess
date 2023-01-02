@@ -319,6 +319,7 @@ class Game {
                 }
             }
         }
+        let kingPos = [kingX, kingY]
 
         // test pawn 
         if ( checkClr == 'b' ) {
@@ -343,41 +344,52 @@ class Game {
         }
 
         // test knight 
-        let knightPoses = Game.get_knight_pos_list( [kingX, kingY] )
-        for ( let pos of knightPoses ) {
+        let possibleKnightPoses = Game.get_knight_pos_list( kingPos ) // knight positions 
+        for ( let pos of possibleKnightPoses ) {
             let possibleKnight = Game.get_info( pos, board )
-            if ( possibleKnight.color != checkClr && possibleKnight.type == 'knight' ) {
+            if ( possibleKnight.type == 'knight' &&
+                ( possibleKnight.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
 
         // test rook & queen 
-        let upInfo = Game.get_straight_info( [kingX, kingY], -1, 0, board )
-        let downInfo = Game.get_straight_info( [kingX, kingY], 1, 0, board )
-        let leftInfo = Game.get_straight_info( [kingX, kingY], 0, -1, board )
-        let rightInfo = Game.get_straight_info( [kingX, kingY], 0, 1, board )
+        let upInfo = Game.get_straight_info( kingPos, -1, 0, board )
+        let downInfo = Game.get_straight_info( kingPos, 1, 0, board )
+        let leftInfo = Game.get_straight_info( kingPos, 0, -1, board )
+        let rightInfo = Game.get_straight_info( kingPos, 0, 1, board )
 
         let infos = [upInfo, downInfo, leftInfo, rightInfo]
         for ( let info of infos ) {
-            if ( ( info.type == 'rook' || info.type == 'queen' ) && ( info.color = checkClr == 'w' ? 'b' : 'w' ) ) {
+            if ( ( info.type == 'rook' || info.type == 'queen' ) &&
+                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
 
         // test bishop & queen 
-        let upRightInfo = Game.get_straight_info( [kingX, kingY], -1, 1, board )
-        let upLeftInfo = Game.get_straight_info( [kingX, kingY], -1, -1, board )
-        let downRightInfo = Game.get_straight_info( [kingX, kingY], 1, 1, board )
-        let downLeftInfo = Game.get_straight_info( [kingX, kingY], 1, -1, board )
+        let upRightInfo = Game.get_straight_info( kingPos, -1, 1, board )
+        let upLeftInfo = Game.get_straight_info( kingPos, -1, -1, board )
+        let downRightInfo = Game.get_straight_info( kingPos, 1, 1, board )
+        let downLeftInfo = Game.get_straight_info( kingPos, 1, -1, board )
 
         infos = [upRightInfo, upLeftInfo, downRightInfo, downLeftInfo]
         for ( let info of infos ) {
-            if ( ( info.type == 'bishop' || info.type == 'queen' ) && ( info.color = checkClr == 'w' ? 'b' : 'w' ) ) {
+            if ( ( info.type == 'bishop' || info.type == 'queen' ) &&
+                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
 
         // test king 
+        let possibleKingPoses = Game.get_king_pos_list( [kingX, kingY] )
+        for ( let pos of possibleKingPoses ) {
+            let possibleKing = Game.get_info( pos, board )
+            if ( possibleKing.type == 'king' &&
+                possibleKing.color == ( checkClr == 'w' ? 'b' : 'w' ) ) {
+                return true
+            }
+        }
         return false
     }
 
@@ -407,6 +419,20 @@ class Game {
             [x - 2, y + 1],
             [x + 2, y - 1],
             [x - 2, y - 1],
+        ]
+    }
+
+    static get_king_pos_list( pos ) {
+        let [x, y] = pos
+        return [
+            [x - 1, y - 1],
+            [x - 1, y],
+            [x - 1, y + 1],
+            [x, y + 1],
+            [x + 1, y + 1],
+            [x + 1, y],
+            [x + 1, y - 1],
+            [x, y - 1]
         ]
     }
 
