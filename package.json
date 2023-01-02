@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "inquirer": "^9.1.4"
+  },
+  "scripts": {
+    "frontend": "cd frontend && yarn start",
+    "backend": "cd backend && yarn server"
+  },
+  "name": "NWA-Chess",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/LiSeng0903/NWA-Chess.git",
+  "author": "PuSung <sam90.hsu@gmail.com>",
+  "license": "MIT",
+  "type": "module"
+}
