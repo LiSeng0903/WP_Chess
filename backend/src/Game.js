@@ -1,6 +1,7 @@
-import { DEBUG_MODE, POS, TYPE } from "./constants.js"
+const BOARD_LEN = 8
 
 class Game {
+    // Static function & variables 
     static keys = {
         'pawn': {
             'w': '♙',
@@ -31,175 +32,55 @@ class Game {
         }
     }
 
+    static init_board = () => {
+        let board = []
+        for ( let row = 0; row < BOARD_LEN; row++ ) {
+            board.push( [] )
+            for ( let col = 0; col < BOARD_LEN; col++ ) {
+                board[row].push( {
+                    type: 'nothing',
+                    color: ( row == 0 || row == 1 ) ? 'b' : ( ( row == 6 || row == 7 ) ? 'w' : 'nothing' )
+                } )
+            }
+        }
+
+        // Black
+        board[0][0].type = 'rook'
+        board[0][1].type = 'knight'
+        board[0][2].type = 'bishop'
+        board[0][3].type = 'queen'
+        board[0][4].type = 'king'
+        board[0][5].type = 'bishop'
+        board[0][6].type = 'knight'
+        board[0][7].type = 'rook'
+        for ( let col = 0; col < BOARD_LEN; col++ ) {
+            board[1][col].type = 'pawn'
+        }
+
+        // White 
+        board[7][0].type = 'rook'
+        board[7][1].type = 'knight'
+        board[7][2].type = 'bishop'
+        board[7][3].type = 'queen'
+        board[7][4].type = 'king'
+        board[7][5].type = 'bishop'
+        board[7][6].type = 'knight'
+        board[7][7].type = 'rook'
+        for ( let col = 0; col < BOARD_LEN; col++ ) {
+            board[6][col].type = 'pawn'
+        }
+
+        return board
+    }
+
     static previewFunctions = {
         'pawn': Game.pawn_preview,
+        'knight': Game.knight_preview,
         'bishop': Game.bishop_preview,
         'rook': Game.rook_preview,
-        'king': Game.king_preview,
         'queen': Game.queen_preview,
-        'knight': Game.knight_preview,
+        'king': Game.king_preview,
         'nothing': () => { return [] }
-    }
-
-    static king_preview( oriX, oriY, board ) {
-        let clr = board[oriX][oriY].color
-        let avaList = []
-        for ( let x = oriX - 1; x <= oriX + 1; x++ ) {
-            for ( let y = oriY - 1; y <= oriY + 1; y++ ) {
-                if ( Game.is_in_range( [x, y] ) && board[x][y].color != clr ) {
-                    avaList.push( [x, y] )
-                }
-            }
-        }
-        return avaList
-    }
-
-    static queen_preview( oriX, oriY, board ) {
-        let avaList = Game.bishop_preview( oriX, oriY, board )
-        avaList = avaList.concat( Game.rook_preview( oriX, oriY, board ) )
-
-        return avaList
-    }
-
-    static bishop_preview( oriX, oriY, board ) {
-        let clr = board[oriX][oriY].color
-        let avaList = []
-
-        // left up 
-        if ( Game.is_in_range( [oriX - 1, oriY - 1] ) ) {
-            for ( let x = oriX - 1, y = oriY - 1; x >= 0 && y >= 0; x--, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // left down 
-        if ( Game.is_in_range( [oriX + 1, oriY - 1] ) ) {
-            for ( let x = oriX + 1, y = oriY - 1; x <= 7 && y >= 0; x++, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right up
-        if ( Game.is_in_range( [oriX - 1, oriY + 1] ) ) {
-            for ( let x = oriX - 1, y = oriY + 1; x >= 0 && y <= 7; x--, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right down 
-        if ( Game.is_in_range( [oriX + 1, oriY + 1] ) ) {
-            for ( let x = oriX + 1, y = oriY + 1; x <= 7 && y <= 7; x++, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        return avaList
-    }
-
-    static knight_preview( oriX, oriY, board ) {
-        let clr = board[oriX][oriY].color
-        let avaList = []
-
-        avaList.push( [oriX - 1, oriY - 2] )
-        avaList.push( [oriX - 2, oriY - 1] )
-        avaList.push( [oriX - 2, oriY + 1] )
-        avaList.push( [oriX - 1, oriY + 2] )
-        avaList.push( [oriX + 1, oriY - 2] )
-        avaList.push( [oriX + 2, oriY - 1] )
-        avaList.push( [oriX + 2, oriY + 1] )
-        avaList.push( [oriX + 1, oriY + 2] )
-
-        avaList = avaList.filter( ( avaPos ) => { return Game.is_in_range( avaPos ) } )
-        avaList = avaList.filter( ( avaPos ) => { return board[avaPos[0]][avaPos[1]].color != clr } )
-        return avaList
-    }
-
-    static rook_preview( oriX, oriY, board ) {
-        let clr = board[oriX][oriY].color
-        let avaList = []
-
-        // upward check 
-        if ( oriX != 0 ) {
-
-            for ( let x = oriX - 1; x >= 0; x-- ) {
-                if ( board[x][oriY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][oriY].color != clr ) {
-                        avaList.push( [x, oriY] )
-                    }
-                    break
-                }
-                avaList.push( [x, oriY] )
-            }
-        }
-
-        // Downward check 
-        if ( oriX != 7 ) {
-            for ( let x = oriX + 1; x <= 7; x++ ) {
-                if ( board[x][oriY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][oriY].color != clr ) {
-                        avaList.push( [x, oriY] )
-                    }
-                    break
-                }
-                avaList.push( [x, oriY] )
-            }
-        }
-
-        // Left 
-        if ( oriY != 0 ) {
-            for ( let y = oriY - 1; y >= 0; y-- ) {
-                if ( board[oriX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[oriX][y].color != clr ) {
-                        avaList.push( [oriX, y] )
-                    }
-                    break
-                }
-                avaList.push( [oriX, y] )
-            }
-        }
-
-        // Right 
-        if ( oriY != 7 ) {
-            for ( let y = oriY + 1; y <= 7; y++ ) {
-                if ( board[oriX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[oriX][y].color != clr ) {
-                        avaList.push( [oriX, y] )
-                    }
-                    break
-                }
-                avaList.push( [oriX, y] )
-            }
-        }
-
-        return avaList
     }
 
     static pawn_preview( oriX, oriY, board ) {
@@ -267,16 +148,190 @@ class Game {
         return avaList
     }
 
+    static king_preview( oriX, oriY, board ) {
+        let clr = board[oriX][oriY].color
+        let avaList = []
+        for ( let x = oriX - 1; x <= oriX + 1; x++ ) {
+            for ( let y = oriY - 1; y <= oriY + 1; y++ ) {
+                if ( Game.is_in_range( [x, y] ) && board[x][y].color != clr ) {
+                    avaList.push( [x, y] )
+                }
+            }
+        }
+        return avaList
+    }
+
+    static bishop_preview( oriX, oriY, board ) {
+        let clr = board[oriX][oriY].color
+        let avaList = []
+
+        // left up 
+        if ( Game.is_in_range( [oriX - 1, oriY - 1] ) ) {
+            for ( let x = oriX - 1, y = oriY - 1; x >= 0 && y >= 0; x--, y-- ) {
+                if ( board[x][y].type != 'nothing' ) {
+                    if ( board[x][y].color != clr ) {
+                        avaList.push( [x, y] )
+                    }
+                    break
+                }
+                avaList.push( [x, y] )
+            }
+        }
+
+        // left down 
+        if ( Game.is_in_range( [oriX + 1, oriY - 1] ) ) {
+            for ( let x = oriX + 1, y = oriY - 1; x <= 7 && y >= 0; x++, y-- ) {
+                if ( board[x][y].type != 'nothing' ) {
+                    if ( board[x][y].color != clr ) {
+                        avaList.push( [x, y] )
+                    }
+                    break
+                }
+                avaList.push( [x, y] )
+            }
+        }
+
+        // right up
+        if ( Game.is_in_range( [oriX - 1, oriY + 1] ) ) {
+            for ( let x = oriX - 1, y = oriY + 1; x >= 0 && y <= 7; x--, y++ ) {
+                if ( board[x][y].type != 'nothing' ) {
+                    if ( board[x][y].color != clr ) {
+                        avaList.push( [x, y] )
+                    }
+                    break
+                }
+                avaList.push( [x, y] )
+            }
+        }
+
+        // right down 
+        if ( Game.is_in_range( [oriX + 1, oriY + 1] ) ) {
+            for ( let x = oriX + 1, y = oriY + 1; x <= 7 && y <= 7; x++, y++ ) {
+                if ( board[x][y].type != 'nothing' ) {
+                    if ( board[x][y].color != clr ) {
+                        avaList.push( [x, y] )
+                    }
+                    break
+                }
+                avaList.push( [x, y] )
+            }
+        }
+
+        return avaList
+    }
+
+    static rook_preview( oriX, oriY, board ) {
+        let clr = board[oriX][oriY].color
+        let avaList = []
+
+        // upward check 
+        if ( oriX != 0 ) {
+
+            for ( let x = oriX - 1; x >= 0; x-- ) {
+                if ( board[x][oriY].type != 'nothing' ) {
+                    // different clr 
+                    if ( board[x][oriY].color != clr ) {
+                        avaList.push( [x, oriY] )
+                    }
+                    break
+                }
+                avaList.push( [x, oriY] )
+            }
+        }
+
+        // Downward check 
+        if ( oriX != 7 ) {
+            for ( let x = oriX + 1; x <= 7; x++ ) {
+                if ( board[x][oriY].type != 'nothing' ) {
+                    // different clr 
+                    if ( board[x][oriY].color != clr ) {
+                        avaList.push( [x, oriY] )
+                    }
+                    break
+                }
+                avaList.push( [x, oriY] )
+            }
+        }
+
+        // Left 
+        if ( oriY != 0 ) {
+            for ( let y = oriY - 1; y >= 0; y-- ) {
+                if ( board[oriX][y].type != 'nothing' ) {
+                    // different clr 
+                    if ( board[oriX][y].color != clr ) {
+                        avaList.push( [oriX, y] )
+                    }
+                    break
+                }
+                avaList.push( [oriX, y] )
+            }
+        }
+
+        // Right 
+        if ( oriY != 7 ) {
+            for ( let y = oriY + 1; y <= 7; y++ ) {
+                if ( board[oriX][y].type != 'nothing' ) {
+                    // different clr 
+                    if ( board[oriX][y].color != clr ) {
+                        avaList.push( [oriX, y] )
+                    }
+                    break
+                }
+                avaList.push( [oriX, y] )
+            }
+        }
+
+        return avaList
+    }
+
+    static queen_preview( oriX, oriY, board ) {
+        let avaList = Game.bishop_preview( oriX, oriY, board )
+        avaList = avaList.concat( Game.rook_preview( oriX, oriY, board ) )
+
+        return avaList
+    }
+
+    static knight_preview( oriX, oriY, board ) {
+        let clr = board[oriX][oriY].color
+        let avaList = []
+
+        avaList.push( [oriX - 1, oriY - 2] )
+        avaList.push( [oriX - 2, oriY - 1] )
+        avaList.push( [oriX - 2, oriY + 1] )
+        avaList.push( [oriX - 1, oriY + 2] )
+        avaList.push( [oriX + 1, oriY - 2] )
+        avaList.push( [oriX + 2, oriY - 1] )
+        avaList.push( [oriX + 2, oriY + 1] )
+        avaList.push( [oriX + 1, oriY + 2] )
+
+        avaList = avaList.filter( ( avaPos ) => { return Game.is_in_range( avaPos ) } )
+        avaList = avaList.filter( ( avaPos ) => { return board[avaPos[0]][avaPos[1]].color != clr } )
+        return avaList
+    }
+
     static is_in_range( examPos ) {
         let [x, y] = examPos
         return ( x >= 0 && x <= 7 && y >= 0 && y <= 7 )
     }
 
     constructor() {
-        this.board = []
-        this.init_board()
+        this.board = Game.init_board()
         this.turn = 'w'
         this.playerCnt = 0
+
+        this.special_rule = {
+            castling: {
+                // 入堡
+                'b': {
+                    'q_side': true,
+                    'k_side': true
+                },
+                'w': {
+                    'q_side': true,
+                    'k_side': true
+                }
+            }
+        }
     }
 
     init_board() {
