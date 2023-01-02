@@ -318,14 +318,22 @@ class Game {
 
         // test pawn 
         if ( checkClr == 'b' ) {
-            if ( ( Game.get_type( [kingX + 1, kingY - 1], board ) == 'pawn' && Game ) ||
-                ( Game.get_type( [kingX + 1, kingY + 1], board ) == 'pawn' ) ) {
+            let possiblePawn_1 = Game.get_info( [kingX + 1, kingY - 1], board )
+            if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'w' ) {
+                return true
+            }
+            let possiblePawn_2 = Game.get_info( [kingX + 1, kingY + 1], board )
+            if ( possiblePawn_2.type == 'pawn' && possiblePawn_2.color == 'w' ) {
                 return true
             }
         }
         if ( checkClr == 'w' ) {
-            if ( Game.get_type( [kingX - 1, kingY - 1], board ) == 'pawn' ||
-                Game.get_type( [kingX - 1, kingY + 1], board ) == 'pawn' ) {
+            let possiblePawn_1 = Game.get_info( [kingX - 1, kingY - 1], board )
+            if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'b' ) {
+                return true
+            }
+            let possiblePawn_2 = Game.get_info( [kingX - 1, kingY + 1], board )
+            if ( possiblePawn_2.type == 'pawn' && possiblePawn_2.color == 'b' ) {
                 return true
             }
         }
@@ -333,7 +341,6 @@ class Game {
         // test knight 
         let knightPoses = Game.get_knight_pos_list( [kingX, kingY] )
         for ( let pos of knightPoses ) {
-            if
         }
 
         // test rook & queen 
@@ -344,18 +351,18 @@ class Game {
         return false
     }
 
-    static get_type( pos, board ) {
+    static get_info( pos, board ) {
         let [x, y] = pos
         if ( Game.is_in_range( [x, y] ) == false ) {
-            return 'nothing'
+            return {
+                type: 'nothing',
+                color: 'nothing',
+                ava: false
+            }
         }
         else {
-            return board[x][y].type
+            return board[x][y]
         }
-    }
-
-    static get_color( pos, board ) {
-
     }
 
     static get_knight_pos_list( pos ) {
@@ -421,8 +428,7 @@ class Game {
         }
         this.check_pawn_transform()
 
-        Game.is_check( this.board, 'b' )
-        console.log( this.board[5][5].ava )
+        console.log( Game.is_check( this.board, 'b' ) )
         return this.board
     }
 
