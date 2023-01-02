@@ -15,10 +15,10 @@ export default {
     do: ( ws, wss, game ) => {
         return ( ( async ( byteString ) => {
             const { data } = byteString
-            const [task, payload] = JSON.parse( data )
+            const [ task, payload ] = JSON.parse( data )
             switch ( task ) {
                 case "init": {
-                    console.log("player connected")
+                    console.log( "player connected" )
                     const newBoard = game.board
                     const turn = game.turn
                     let playerColor = ''
@@ -28,20 +28,20 @@ export default {
                         playerColor = 'w'
                         game.playerCnt++
                     }
-                    sendData( ["init", { newBoard, turn, playerColor }], ws )
+                    sendData( [ "init", { newBoard, turn, playerColor } ], ws )
                     break
                 }
                 case "preview": {
                     const newBoard = game.preview( payload )
                     const turn = game.turn
-                    sendData( ["do", { newBoard, turn }], ws )
+                    sendData( [ "do", { newBoard, turn } ], ws )
                     break
                 }
                 case "move": {
                     const { from, to } = payload
                     const newBoard = game.move( from, to )
                     const turn = game.turn
-                    boardcastMessage( wss, ["do", { newBoard, turn }] )
+                    boardcastMessage( wss, [ "do", { newBoard, turn } ] )
                     break
                 }
             }
