@@ -68,7 +68,7 @@ class Game {
         if ( clr == 'b' ) return 'w'
     }
 
-    // preview functions 
+    // Preview functions 
     static previewFunctions = {
         'pawn': Game.pawn_preview,
         'knight': Game.knight_preview,
@@ -202,17 +202,18 @@ class Game {
         return avaList
     }
 
+    // Other functions
     static is_in_range( pos ) {
         let [x, y] = pos
         return ( x >= 0 && x <= BOARD_LEN - 1 && y >= 0 && y <= BOARD_LEN - 1 )
     }
 
-    static is_check( board, checkClr ) {
+    static is_check( board, beCheckedClr ) {
         // Get king positions
         let [kingX, kingY] = [0, 0]
         for ( let x = 0; x < BOARD_LEN; x++ ) {
             for ( let y = 0; y < BOARD_LEN; y++ ) {
-                if ( board[x][y].color == checkClr && board[x][y].type == 'king' ) {
+                if ( board[x][y].color == beCheckedClr && board[x][y].type == 'king' ) {
                     kingX = x
                     kingY = y
                 }
@@ -221,7 +222,7 @@ class Game {
         let kingPos = [kingX, kingY]
 
         // test pawn 
-        if ( checkClr == 'b' ) {
+        if ( beCheckedClr == 'b' ) {
             let possiblePawn_1 = Game.get_info( [kingX + 1, kingY - 1], board )
             if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'w' ) {
                 return true
@@ -231,7 +232,7 @@ class Game {
                 return true
             }
         }
-        if ( checkClr == 'w' ) {
+        if ( beCheckedClr == 'w' ) {
             let possiblePawn_1 = Game.get_info( [kingX - 1, kingY - 1], board )
             if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'b' ) {
                 return true
@@ -247,7 +248,7 @@ class Game {
         for ( let pos of possibleKnightPoses ) {
             let possibleKnight = Game.get_info( pos, board )
             if ( possibleKnight.type == 'knight' &&
-                ( possibleKnight.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( possibleKnight.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
@@ -261,7 +262,7 @@ class Game {
         let infos = [upInfo, downInfo, leftInfo, rightInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'rook' || info.type == 'queen' ) &&
-                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
@@ -275,7 +276,7 @@ class Game {
         infos = [upRightInfo, upLeftInfo, downRightInfo, downLeftInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'bishop' || info.type == 'queen' ) &&
-                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
                 return true
             }
         }
@@ -285,7 +286,7 @@ class Game {
         for ( let pos of possibleKingPoses ) {
             let possibleKing = Game.get_info( pos, board )
             if ( possibleKing.type == 'king' &&
-                possibleKing.color == ( checkClr == 'w' ? 'b' : 'w' ) ) {
+                possibleKing.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) {
                 return true
             }
         }
@@ -385,14 +386,24 @@ class Game {
     }
 
     constructor() {
+        // Game ids 
         this.gameID = uuid()
         this.wID = ''
         this.bID = ''
-        this.status = ''
 
-        this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
-        this.turn = 'w'
+        // game status 
         this.playerCnt = 0
+        this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
+        this.status = ''
+        this.turn = 'w'
+        this.previewList = []
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            this.previewList.push( [] )
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                this.previewList[x].push( [[]] )
+            }
+        }
+        this.update_preview_list()
     }
 
     move( from, to ) {
@@ -425,6 +436,8 @@ class Game {
         this.check_pawn_transform()
 
         this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
+
+        this.update_preview_list()
     }
 
     preview( prePos ) {
@@ -438,26 +451,14 @@ class Game {
         // Preview position
         let [preX, preY] = prePos
         let pieceType = this.board[preX][preY].type
+        if ( this.board[preX][preY].color != this.turn ) {
+            return this.board
+        }
 
         // Get preview board 
-        let avaList = Game.previewFunctions[pieceType]( prePos, this.board )
-        avaList = avaList.filter( ( avaPos ) => {
-            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
-            let [preX, preY] = prePos
-            let [avaX, avaY] = avaPos
-
-            trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[preX][preY] ) )
-            trialBoard[preX][preY] = {
-                type: 'nothing',
-                color: 'nothing',
-                ava: false
-            }
-
-            return Game.is_check( trialBoard, this.turn ) == false
-        } )
-
-        for ( let i = 0; i < avaList.length; i++ ) {
-            let [x, y] = avaList[i]
+        let avaList = this.previewList[preX][preY]
+        for ( let pos of avaList ) {
+            let [x, y] = pos
             this.board[x][y].ava = true
         }
     }
@@ -495,6 +496,40 @@ class Game {
         else {
             // Full
             return false
+        }
+    }
+
+    update_preview_list() {
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                // only check grid with current color 
+                if ( this.board[x][y].color != this.turn ) {
+                    continue
+                }
+
+                // current position
+                let curPos = [x, y]
+                let type = Game.get_info( curPos, this.board ).type
+                let avaList = Game.previewFunctions[type]( curPos, this.board )
+
+                // filter check 
+                avaList = avaList.filter( ( avaPos ) => {
+                    let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+                    let [preX, preY] = prePos
+                    let [avaX, avaY] = avaPos
+
+                    trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[preX][preY] ) )
+                    trialBoard[preX][preY] = {
+                        type: 'nothing',
+                        color: 'nothing',
+                        ava: false
+                    }
+
+                    return Game.is_check( trialBoard, this.turn ) == false
+                } )
+
+                this.previewList[x][y] = avaList
+            }
         }
     }
 }
