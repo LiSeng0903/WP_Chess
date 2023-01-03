@@ -135,6 +135,12 @@ const ChessProvider = ( props ) => {
                 break
             }
 
+            case "joinRoomFailed": {
+                const errorMsg = response
+                setLoginError( true )
+                break
+            }
+
             case "gameStarted": {
                 const [ newGame, opName ] = response
                 setWaitingForOpponent( false )
