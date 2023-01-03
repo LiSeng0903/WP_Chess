@@ -21,11 +21,18 @@ let connections = []
 
 // game = new Game()
 serverWS.on( "connection", ( clientWS ) => {
+    // store connection 
     let connectionID = uuid()
-    connections[connectionID] = clientWS
+    connections[connectionID] = {
+        ws: clientWS,
+        name: ''
+    }
 
+    // connect & send playerID
     console.log( 'player connect' )
     sendData( ['connectionID', connectionID], clientWS )
+
+    // on message 
     clientWS.onmessage = wsConnect.onMessage( clientWS, games, connections, connectionID )
 } )
 
