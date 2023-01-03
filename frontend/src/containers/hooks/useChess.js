@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-const SERVER_IP = '192.168.0.143'
+const SERVER_IP = 'localhost'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 const sendData = async ( data ) => {
@@ -104,7 +104,7 @@ const ChessProvider = ( props ) => {
     // receiving
     clientWS.onmessage = ( byteString ) => {
         const { data } = byteString
-        const [task, response] = JSON.parse( data )
+        const [ task, response ] = JSON.parse( data )
         switch ( task ) {
 
             case "connectionID": {
@@ -166,7 +166,7 @@ const ChessProvider = ( props ) => {
 
     useEffect( () => {
         setWinner( checkWinner() )
-    }, [board] )
+    }, [ board ] )
 
     const checkWinner = () => {
         if ( board.length == 0 ) {
@@ -177,8 +177,8 @@ const ChessProvider = ( props ) => {
         let blackKing = false
         for ( let x = 0; x < 8; x++ ) {
             for ( let y = 0; y < 8; y++ ) {
-                if ( board[x][y].type == 'king' ) {
-                    if ( board[x][y].color == 'w' ) {
+                if ( board[ x ][ y ].type == 'king' ) {
+                    if ( board[ x ][ y ].color == 'w' ) {
                         whiteKing = true
                     }
                     else {

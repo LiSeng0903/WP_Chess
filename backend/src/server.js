@@ -8,8 +8,8 @@ const sendData = ( data, clientWS ) => {
     clientWS.send( JSON.stringify( data ) )
 }
 
-// const SERVER_IP = 'localhost' 
-const SERVER_IP = '192.168.0.143'
+const SERVER_IP = 'localhost'
+// const SERVER_IP = '192.168.0.143'
 
 const app = express()
 const server = http.createServer( app )
@@ -23,7 +23,7 @@ let connections = []
 serverWS.on( "connection", ( clientWS ) => {
     // store connection 
     let connectionID = uuid()
-    connections[connectionID] = {
+    connections[ connectionID ] = {
         ws: clientWS,
         name: '',
         game: ''
@@ -31,7 +31,7 @@ serverWS.on( "connection", ( clientWS ) => {
 
     // connect & send playerID
     console.log( 'player connect' )
-    sendData( ['connectionID', connectionID], clientWS )
+    sendData( [ 'connectionID', connectionID ], clientWS )
 
     // on message 
     clientWS.onmessage = wsConnect.onMessage( clientWS, games, connections, connectionID )
