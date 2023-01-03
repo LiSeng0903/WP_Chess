@@ -471,10 +471,11 @@ class Game {
 
     move( from, to ) {
         this.clean_ava()
-        let avaBoard = this.preview( from )
+
+        this.preview( from )
         let [fromX, fromY] = from
         let [toX, toY] = to
-        if ( avaBoard[toX][toY].ava == true ) {
+        if ( this.board[toX][toY].ava == true ) {
             let piece = this.board[fromX][fromY]
             this.board[fromX][fromY] = {
                 type: 'nothing',
@@ -484,7 +485,7 @@ class Game {
             this.board[toX][toY] = piece
         }
         else {
-            return this.board
+            return
         }
 
         this.clean_ava()
@@ -498,7 +499,6 @@ class Game {
         this.check_pawn_transform()
 
         this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
-        return this.board
     }
 
     preview( prePos ) {
@@ -534,7 +534,6 @@ class Game {
             let [x, y] = avaList[i]
             this.board[x][y].ava = true
         }
-        return this.board
     }
 
     clean_ava() {
