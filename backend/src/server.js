@@ -2,8 +2,11 @@ import express from 'express'
 import http from 'http'
 import WebSocket from 'ws'
 import wsConnect from "./wsConnect.js"
-import { Game } from './Game.js'
 import { uuid } from 'uuidv4'
+
+const sendData = ( data, clientWS ) => {
+    clientWS.send( JSON.stringify( data ) )
+}
 
 // const SERVER_IP = 'localhost' 
 const SERVER_IP = '192.168.0.143'
@@ -22,7 +25,8 @@ serverWS.on( "connection", ( clientWS ) => {
     connections[connectionID] = clientWS
 
     console.log( 'player connect' )
-    clientWS.onmessage = wsConnect.do( clientWS, serverWS, games, connections, connectionID )
+    sendData( ['connectionID', connectionID], clientWS )
+    clientWS.onmessage = wsConnect.onMessage( clientWS, games, connections, connectionID )
 } )
 
 const PORT = 4000

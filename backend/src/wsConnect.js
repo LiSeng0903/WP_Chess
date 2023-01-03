@@ -21,7 +21,7 @@ const boardcastMessage = ( serverWS, data ) => {
 // }
 
 export default {
-    do: ( clientWS, serverWS, games, connections, connectionID ) => {
+    onMessage: ( clientWS, games, connections, connectionID ) => {
         return ( ( async ( byteString ) => {
             const { data } = byteString
             const [task, payload] = JSON.parse( data )
@@ -51,20 +51,6 @@ export default {
                     }
 
                     break
-                }
-                case "init": {
-                    // console.log( "player connected" )
-                    // const newBoard = game.board
-                    // const turn = game.turn
-                    // let playerColor = ''
-                    // if ( game.playerCnt === 1 ) {
-                    //     playerColor = 'b'
-                    // } else {
-                    //     playerColor = 'w'
-                    //     game.playerCnt++
-                    // }
-                    // sendData( ["init", { newBoard, turn, playerColor }], clientWS )
-                    // break
                 }
                 case "preview": {
                     // const newBoard = game.preview( payload )
