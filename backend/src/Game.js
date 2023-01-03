@@ -5,17 +5,7 @@ const BOARD_LEN = 8
 
 class Game {
     // Static function
-
-    static previewFunctions = {
-        'pawn': Game.pawn_preview,
-        'knight': Game.knight_preview,
-        'bishop': Game.bishop_preview,
-        'rook': Game.rook_preview,
-        'queen': Game.queen_preview,
-        'king': Game.king_preview,
-        'nothing': () => { return [] }
-    }
-
+    // init function
     static debug_init_board = () => {
         let board = Game.init_board()
 
@@ -72,6 +62,23 @@ class Game {
         return board
     }
 
+    // get opposite color 
+    static op_clr = ( clr ) => {
+        if ( clr == 'w' ) return 'b'
+        if ( clr == 'b' ) return 'w'
+    }
+
+    // preview functions 
+    static previewFunctions = {
+        'pawn': Game.pawn_preview,
+        'knight': Game.knight_preview,
+        'bishop': Game.bishop_preview,
+        'rook': Game.rook_preview,
+        'queen': Game.queen_preview,
+        'king': Game.king_preview,
+        'nothing': () => { return [] }
+    }
+
     static pawn_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
@@ -80,8 +87,9 @@ class Game {
         // black
         if ( clr == 'b' ) {
             if ( preX == 7 ) {
-                return []
+                return [] // nothing to move 
             }
+
             //forward 
             let forward = 1
             if ( preX == 1 ) {
@@ -138,17 +146,29 @@ class Game {
         return avaList
     }
 
+    static knight_preview( prePos, board ) {
+        let [preX, preY] = prePos
+        let clr = board[preX][preY].color
+        let avaList = Game.get_knight_pos_list( prePos )
+
+        avaList = avaList.filter( ( avaPos ) => { return Game.is_in_range( avaPos ) } )
+        avaList = avaList.filter( ( avaPos ) => { return board[avaPos[0]][avaPos[1]].color != clr } )
+        return avaList
+    }
+
     static king_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
-        let avaList = []
-        for ( let x = preX - 1; x <= preX + 1; x++ ) {
-            for ( let y = preY - 1; y <= preY + 1; y++ ) {
-                if ( Game.is_in_range( [x, y] ) && board[x][y].color != clr ) {
-                    avaList.push( [x, y] )
-                }
-            }
-        }
+        let avaList = Game.get_king_pos_list( prePos )
+        console.log( 'hihi ' )
+        console.log( avaList )
+
+        avaList = avaList.filter( ( avaPos ) => {
+            console.log( avaPos )
+            let [avaX, avaY] = avaPos
+            return board[avaX][avaY].color != clr
+        } )
+
         return avaList
     }
 
@@ -285,25 +305,6 @@ class Game {
         return avaList
     }
 
-    static knight_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let clr = board[preX][preY].color
-        let avaList = []
-
-        avaList.push( [preX - 1, preY - 2] )
-        avaList.push( [preX - 2, preY - 1] )
-        avaList.push( [preX - 2, preY + 1] )
-        avaList.push( [preX - 1, preY + 2] )
-        avaList.push( [preX + 1, preY - 2] )
-        avaList.push( [preX + 2, preY - 1] )
-        avaList.push( [preX + 2, preY + 1] )
-        avaList.push( [preX + 1, preY + 2] )
-
-        avaList = avaList.filter( ( avaPos ) => { return Game.is_in_range( avaPos ) } )
-        avaList = avaList.filter( ( avaPos ) => { return board[avaPos[0]][avaPos[1]].color != clr } )
-        return avaList
-    }
-
     static is_in_range( pos ) {
         let [x, y] = pos
         return ( x >= 0 && x <= BOARD_LEN - 1 && y >= 0 && y <= BOARD_LEN - 1 )
@@ -425,7 +426,8 @@ class Game {
 
     static get_king_pos_list( pos ) {
         let [x, y] = pos
-        return [
+
+        let posList = [
             [x - 1, y - 1],
             [x - 1, y],
             [x - 1, y + 1],
@@ -434,7 +436,12 @@ class Game {
             [x + 1, y],
             [x + 1, y - 1],
             [x, y - 1]
-        ]
+        ].filter( ( pos ) => { return Game.is_in_range( pos ) } )
+
+        console.log( 'fifi' )
+        console.log( posList )
+
+        return posList
     }
 
     static get_straight_pos( oriPos, delX, delY, board ) {
