@@ -1,6 +1,6 @@
 import { uuid } from "uuidv4"
 
-const DEBUG = false
+const DEBUG = true
 const BOARD_LEN = 8
 
 class Game {
@@ -12,10 +12,10 @@ class Game {
         board[0][4].color = 'nothing'
         board[0][4].color = 'nothing'
 
-        board[3][4].color = 'b'
-        board[3][4].type = 'king'
+        board[3][4].color = 'w'
+        board[3][4].type = 'rook'
 
-        board[2][2].color = 'w'
+        board[2][2].color = 'b'
         board[2][2].type = 'rook'
 
         return board
@@ -156,151 +156,48 @@ class Game {
         return avaList
     }
 
-    static king_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let clr = board[preX][preY].color
-        let avaList = Game.get_king_pos_list( prePos )
-        console.log( 'hihi ' )
-        console.log( avaList )
-
-        avaList = avaList.filter( ( avaPos ) => {
-            console.log( avaPos )
-            let [avaX, avaY] = avaPos
-            return board[avaX][avaY].color != clr
-        } )
-
-        return avaList
-    }
-
     static bishop_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
-        let avaList = []
 
-        // left up 
-        if ( Game.is_in_range( [preX - 1, preY - 1] ) ) {
-            for ( let x = preX - 1, y = preY - 1; x >= 0 && y >= 0; x--, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
+        let upLeftPos = Game.get_straight_list( prePos, -1, -1, clr, board )
+        let upRightPos = Game.get_straight_list( prePos, -1, 1, clr, board )
+        let DownLeftPos = Game.get_straight_list( prePos, 1, -1, clr, board )
+        let DownRightPos = Game.get_straight_list( prePos, 1, 1, clr, board )
 
-        // left down 
-        if ( Game.is_in_range( [preX + 1, preY - 1] ) ) {
-            for ( let x = preX + 1, y = preY - 1; x <= 7 && y >= 0; x++, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right up
-        if ( Game.is_in_range( [preX - 1, preY + 1] ) ) {
-            for ( let x = preX - 1, y = preY + 1; x >= 0 && y <= 7; x--, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right down 
-        if ( Game.is_in_range( [preX + 1, preY + 1] ) ) {
-            for ( let x = preX + 1, y = preY + 1; x <= 7 && y <= 7; x++, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
+        let avaList = [].concat.apply( [], [upLeftPos, upRightPos, DownLeftPos, DownRightPos] )
         return avaList
     }
 
     static rook_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
-        let avaList = []
 
-        // upward check 
-        if ( preX != 0 ) {
+        let upPos = Game.get_straight_list( prePos, -1, 0, clr, board )
+        let downPos = Game.get_straight_list( prePos, 1, 0, clr, board )
+        let leftPos = Game.get_straight_list( prePos, 0, -1, clr, board )
+        let rightPos = Game.get_straight_list( prePos, 0, 1, clr, board )
 
-            for ( let x = preX - 1; x >= 0; x-- ) {
-                if ( board[x][preY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][preY].color != clr ) {
-                        avaList.push( [x, preY] )
-                    }
-                    break
-                }
-                avaList.push( [x, preY] )
-            }
-        }
-
-        // Downward check 
-        if ( preX != 7 ) {
-            for ( let x = preX + 1; x <= 7; x++ ) {
-                if ( board[x][preY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][preY].color != clr ) {
-                        avaList.push( [x, preY] )
-                    }
-                    break
-                }
-                avaList.push( [x, preY] )
-            }
-        }
-
-        // Left 
-        if ( preY != 0 ) {
-            for ( let y = preY - 1; y >= 0; y-- ) {
-                if ( board[preX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[preX][y].color != clr ) {
-                        avaList.push( [preX, y] )
-                    }
-                    break
-                }
-                avaList.push( [preX, y] )
-            }
-        }
-
-        // Right 
-        if ( preY != 7 ) {
-            for ( let y = preY + 1; y <= 7; y++ ) {
-                if ( board[preX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[preX][y].color != clr ) {
-                        avaList.push( [preX, y] )
-                    }
-                    break
-                }
-                avaList.push( [preX, y] )
-            }
-        }
-
+        let avaList = [].concat.apply( [], [upPos, downPos, leftPos, rightPos] )
         return avaList
     }
 
     static queen_preview( prePos, board ) {
-        let [preX, preY] = prePos
         let avaList = Game.bishop_preview( prePos, board )
         avaList = avaList.concat( Game.rook_preview( prePos, board ) )
+
+        return avaList
+    }
+
+    static king_preview( prePos, board ) {
+        let [preX, preY] = prePos
+        let clr = board[preX][preY].color
+        let avaList = Game.get_king_pos_list( prePos )
+
+        avaList = avaList.filter( ( avaPos ) => {
+            let [avaX, avaY] = avaPos
+            return board[avaX][avaY].color != clr
+        } )
 
         return avaList
     }
@@ -396,7 +293,10 @@ class Game {
     }
 
     static get_info( pos, board ) {
+        // Get information of the grid ( safer than access directly )
+
         let [x, y] = pos
+
         if ( Game.is_in_range( [x, y] ) == false ) {
             return {
                 type: 'nothing',
@@ -412,7 +312,7 @@ class Game {
     static get_knight_pos_list( pos ) {
         let [x, y] = pos
 
-        return [
+        let posList = [
             [x + 1, y + 2],
             [x - 1, y + 2],
             [x + 1, y - 2],
@@ -421,7 +321,9 @@ class Game {
             [x - 2, y + 1],
             [x + 2, y - 1],
             [x - 2, y - 1],
-        ]
+        ].filter( ( pos ) => { return Game.is_in_range( pos ) } )
+
+        return posList
     }
 
     static get_king_pos_list( pos ) {
@@ -438,31 +340,48 @@ class Game {
             [x, y - 1]
         ].filter( ( pos ) => { return Game.is_in_range( pos ) } )
 
-        console.log( 'fifi' )
-        console.log( posList )
-
         return posList
     }
 
     static get_straight_pos( oriPos, delX, delY, board ) {
         // Get the nearest position with piece along certain direction
         // E.g. delX=0; delY=1 => get the nearest position with piece along right side of oriPos
-
         let [x, y] = oriPos
+
         while ( Game.is_in_range( [x, y] ) ) {
             x += delX
             y += delY
             let info = Game.get_info( [x, y], board )
+
+            // meet something 
             if ( info.type != 'nothing' ) {
                 return [x, y]
             }
         }
-        return [-1, -1]
+        return [x - delX, y - delY]
     }
 
     static get_straight_info( oriPos, delX, delY, board ) {
         let pos = Game.get_straight_pos( oriPos, delX, delY, board )
         return Game.get_info( pos, board )
+    }
+
+    static get_straight_list( oriPos, delX, delY, myClr, board ) {
+        let [oriX, oriY] = oriPos
+        let straightList = []
+
+        let [x, y] = [oriX + delX, oriY + delY]
+
+        while ( Game.is_in_range( [x, y] ) && Game.get_info( [x, y], board ).color == 'nothing' ) {
+            straightList.push( [x, y] )
+            x += delX
+            y += delY
+        }
+        if ( Game.get_info( [x, y], board ).color == Game.op_clr( myClr ) ) {
+            straightList.push( [x, y] )
+        }
+
+        return straightList
     }
 
     constructor() {
