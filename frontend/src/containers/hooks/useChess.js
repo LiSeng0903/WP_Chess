@@ -39,6 +39,12 @@ const ChessContext = createContext(
         connectionID: "",
         setConnectionID: () => {},
 
+        status: "",
+        setStatus: () => {},
+
+        waitingForOpponent: Boolean,
+        setWaitingForOpponent: () => {},
+
         loginError: Boolean, //determone if user has enter correct or valid info
         setLoginError: () => {},
 
@@ -57,10 +63,12 @@ const ChessProvider = ( props ) => {
     const [ myColor, setMyColor ] = useState( '' )
     const [ focusP, setFocusP ] = useState( [] )
     const [ winner, setWinner ] = useState( '' )
-    const [ name, setName ] = useState( "Alistone" )
-    const [ opponentName, setOpponentName ] = useState( "Pusung" )
+    const [ name, setName ] = useState( "Player" )
+    const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
     const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
     const [ connectionID, setConnectionID ] = useState( "" )
+    const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
+    const [ status, setStatus ] = useState( "" )
     const [ loginError, setLoginError ] = useState( false )
 
 
@@ -100,15 +108,16 @@ const ChessProvider = ( props ) => {
 
             case "connectionID": {
                 const ID = response
-                console.log( "receive id", ID )
                 break
             }
 
             case "createRoomSuccess": {
+                console.log( waitingForOpponent )
                 const [ game, playerColor, gameID ] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
+                setStatus( game.status )
                 setMyColor( playerColor )
                 setRoomNumber( gameID )
                 break
@@ -119,16 +128,18 @@ const ChessProvider = ( props ) => {
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
+                setStatus( game.status )
                 setMyColor( playerColor )
                 setRoomNumber( gameID )
                 break
             }
 
             case "gameStarted": {
-                console.log( "get game started" )
                 const [ newGame, opName ] = response
+                setWaitingForOpponent( false )
                 setBoard( newGame.board )
                 setTurn( newGame.turn )
+                setStatus( newGame.status )
                 setOpponentName( opName )
                 break
             }
@@ -142,18 +153,15 @@ const ChessProvider = ( props ) => {
             }
 
             case "do": {
-                const { newBoard, turn } = response
-                setBoard( newBoard )
-                setTurn( turn )
+                const game = response
+                setBoard( game.board )
+                setTurn( game.turn )
+                console.log( game.status )
+                setStatus( game.status )
                 break
             }
         }
     }
-
-    useEffect( () => {
-        // init()
-        console.log( `My color is ${myColor == 'w' ? 'white' : 'black'}` )
-    }, [] )
 
     useEffect( () => {
         setWinner( checkWinner() )
@@ -224,6 +232,12 @@ const ChessProvider = ( props ) => {
 
                     roomNumber,
                     setRoomNumber,
+
+                    status,
+                    setStatus,
+
+                    waitingForOpponent,
+                    setWaitingForOpponent,
 
                     loginError,
                     setLoginError,

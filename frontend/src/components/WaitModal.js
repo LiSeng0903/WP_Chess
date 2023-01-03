@@ -26,13 +26,14 @@ const WaitTextWrapper = styled.div`
     font-weight: bold;
 `
 
-const WaitModal = () => {
+const WaitModal = ( { waitingJoin } ) => {
+    console.log( waitingJoin )
     return (
         <>
-            <WaitModalWrapper>
+            <WaitModalWrapper style={{ width: waitingJoin ? "500px" : null }}>
             </WaitModalWrapper>
-            <WaitTextWrapper>
-                <p>♛ Waiting for opponent ♛</p>
+            <WaitTextWrapper style={{ width: waitingJoin ? "500px" : null }}>
+                <p>{waitingJoin === "true" ? "♛ Waiting for opponent to join ♛" : "♛ Waiting for opponent ♛"}</p>
             </WaitTextWrapper>
         </>
     )

@@ -86,7 +86,7 @@ const RightWrapper = styled.div`
 `
 
 const Board = () => {
-    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName } = useChess()
+    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status } = useChess()
 
     const clickHandler = ( x, y ) => {
         // not your turn 
@@ -114,6 +114,7 @@ const Board = () => {
         <>
             <LeftWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}>
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "20px" }}>&ensp;Room Number: {roomNumber}</p>
+                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: myColor !== "w" ? "#63b331" : "#dd1616" }}>{status}!</p>}
                 <p style={{ alignSelf: "flex-end", fontFamily: "Comic Sans MS", fontSize: "35px" }}>{name}&ensp;</p>
             </LeftWrapper>
             <BoardWrapper>
@@ -123,7 +124,6 @@ const Board = () => {
                             return (
                                 <BoardRowWrapper>
                                     {row.map( ( grd, y ) => {
-                                        console.log( focusP )
                                         return (
                                             <Grid x={x} y={y} image={imgDict[ grd.type ][ grd.color ]} ava={grd.ava} isFocus={( focusP[ 0 ] == x && focusP[ 1 ] == y )} clickHandler={( event ) => { clickHandler( x, y ) }} />
                                         )
@@ -147,7 +147,7 @@ const Board = () => {
                         )
 
                 }
-                {winner ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? <></> : <WaitModal /> )}
+                {winner ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? ( waitingForOpponent == true ? <WaitModal waitingJoin="true" /> : <></> ) : <WaitModal waitingJoin="false" /> )}
             </BoardWrapper>
             <RightWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}  >
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "35px" }}>&ensp;{opponentName}</p>
