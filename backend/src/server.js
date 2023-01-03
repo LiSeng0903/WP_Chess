@@ -25,7 +25,8 @@ serverWS.on( "connection", ( clientWS ) => {
     let connectionID = uuid()
     connections[connectionID] = {
         ws: clientWS,
-        name: ''
+        name: '',
+        game: ''
     }
 
     // connect & send playerID
