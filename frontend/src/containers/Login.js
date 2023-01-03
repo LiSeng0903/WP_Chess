@@ -30,8 +30,8 @@ const Login = () => {
 
     return (
         <LoginWrapper>
-            <Title>Chess!</Title>
-            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>Please Enter Valid Room Number.</p>
+            <Title style={{ fontFamily: "Comic Sans MS" }}>Chess!</Title>
+            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>Please Enter a Valid Room Number or a User Name.</p>
             <Enter
                 me={name}
                 setName={setName}
