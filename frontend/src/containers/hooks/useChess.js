@@ -4,12 +4,14 @@ const SERVER_IP = 'localhost'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 clientWS.onopen = () => {
-    sendData( [ "init" ] )
+    // sendData( ["init"] )
+    sendData( ['createRoom'] )
 }
 
 const sendData = async ( data ) => {
     await clientWS.send( JSON.stringify( data ) )
 }
+
 
 const ChessContext = createContext(
     {
@@ -47,21 +49,21 @@ const ChessContext = createContext(
 
 
 const ChessProvider = ( props ) => {
-    const [ hasStarted, setHasStarted ] = useState( false )
-    const [ board, setBoard ] = useState( [] )
-    const [ turn, setTurn ] = useState( '' )
-    const [ myColor, setMyColor ] = useState( '' )
-    const [ focusP, setFocusP ] = useState( [] )
-    const [ winner, setWinner ] = useState( '' )
-    const [ name, setName ] = useState( "" )
-    const [ roomNumber, setRoomNumber ] = useState( 0 )
-    const [ loginError, setLoginError ] = useState( false )
+    const [hasStarted, setHasStarted] = useState( false )
+    const [board, setBoard] = useState( [] )
+    const [turn, setTurn] = useState( '' )
+    const [myColor, setMyColor] = useState( '' )
+    const [focusP, setFocusP] = useState( [] )
+    const [winner, setWinner] = useState( '' )
+    const [name, setName] = useState( "" )
+    const [roomNumber, setRoomNumber] = useState( 0 )
+    const [loginError, setLoginError] = useState( false )
 
 
     // receiving
     clientWS.onmessage = ( byteString ) => {
         const { data } = byteString
-        const [ task, response ] = JSON.parse( data )
+        const [task, response] = JSON.parse( data )
         switch ( task ) {
             case "init": {
                 const { newBoard, turn, playerColor } = response
@@ -87,7 +89,7 @@ const ChessProvider = ( props ) => {
 
     useEffect( () => {
         setWinner( checkWinner() )
-    }, [ board ] )
+    }, [board] )
 
     const checkWinner = () => {
         if ( board.length == 0 ) {
@@ -98,8 +100,8 @@ const ChessProvider = ( props ) => {
         let blackKing = false
         for ( let x = 0; x < 8; x++ ) {
             for ( let y = 0; y < 8; y++ ) {
-                if ( board[ x ][ y ].type == 'king' ) {
-                    if ( board[ x ][ y ].color == 'w' ) {
+                if ( board[x][y].type == 'king' ) {
+                    if ( board[x][y].color == 'w' ) {
                         whiteKing = true
                     }
                     else {
@@ -126,21 +128,21 @@ const ChessProvider = ( props ) => {
     // sending
     const preview = ( previewPos ) => {
         // get preview board 
-        sendData( [ "preview", previewPos ] )
+        sendData( ["preview", previewPos] )
     }
 
     const move = ( from, to ) => {
         // get moved board 
-        sendData( [ "move", { from, to } ] )
+        sendData( ["move", { from, to }] )
     }
 
     const init = () => {
         // get initial board 
-        sendData( [ 'init' ] )
+        sendData( ['init'] )
     }
 
     const login = () => {
-        sendData( [ "login", { name, roomNumber } ] )
+        sendData( ["login", { name, roomNumber }] )
     }
 
     return (

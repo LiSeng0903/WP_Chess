@@ -1,6 +1,9 @@
 {
   "dependencies": {
-    "inquirer": "^9.1.4"
+    "inquirer": "^9.1.4",
+    "install": "^0.13.0",
+    "npm": "^9.2.0",
+    "uuidv4": "^6.2.13"
   },
   "scripts": {
     "frontend": "cd frontend && yarn start",
