@@ -13,8 +13,8 @@ const serverWS = new WebSocket.Server( { server } )
 let game = ''
 
 game = new Game()
-serverWS.on( "connection", ( ws ) => {
-    ws.onmessage = wsConnect.do( ws, serverWS, game )
+serverWS.on( "connection", ( clientWS ) => {
+    clientWS.onmessage = wsConnect.do( clientWS, serverWS, game )
 } )
 
 const PORT = 4000
