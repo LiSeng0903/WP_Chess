@@ -255,7 +255,7 @@ class Game {
         for ( let pos of possibleKnightPoses ) {
             let possibleKnight = Game.get_info( pos, board )
             if ( possibleKnight.type == 'knight' &&
-                ( possibleKnight.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( possibleKnight.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -269,7 +269,7 @@ class Game {
         let infos = [upInfo, downInfo, leftInfo, rightInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'rook' || info.type == 'queen' ) &&
-                ( info.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -283,7 +283,7 @@ class Game {
         infos = [upRightInfo, upLeftInfo, downRightInfo, downLeftInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'bishop' || info.type == 'queen' ) &&
-                ( info.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -293,7 +293,7 @@ class Game {
         for ( let pos of possibleKingPoses ) {
             let possibleKing = Game.get_info( pos, board )
             if ( possibleKing.type == 'king' &&
-                possibleKing.color == ( beCheckedClr == 'w' ? 'b' : 'w' ) ) {
+                possibleKing.color == Game.op_clr( beCheckedClr ) ) {
                 return true
             }
         }
@@ -414,12 +414,13 @@ class Game {
     }
 
     move( from, to ) {
+        // clean board 
         this.clean_ava()
 
-        this.preview( from )
+        // move 
         let [fromX, fromY] = from
         let [toX, toY] = to
-        if ( this.board[toX][toY].ava == true ) {
+        if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
             let piece = this.board[fromX][fromY]
             this.board[fromX][fromY] = {
                 type: 'nothing',
@@ -429,24 +430,11 @@ class Game {
             this.board[toX][toY] = piece
         }
         else {
+            // cannot move
             return
         }
-
-        this.clean_ava()
-
-        if ( this.turn == 'w' ) {
-            this.turn = 'b'
-        }
-        else {
-            this.turn = 'w'
-        }
         this.check_pawn_transform()
-        this.update_preview_list()
-
-        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
-        this.status = this.is_checkmate() ? 'checkmate' : this.status
-
-        console.log( this.is_checkmate() )
+        this.switch_turn()
     }
 
     preview( prePos ) {
@@ -470,6 +458,14 @@ class Game {
             let [x, y] = pos
             this.board[x][y].ava = true
         }
+    }
+
+    switch_turn() {
+        this.turn = Game.op_clr( this.turn )
+
+        this.update_preview_list()
+        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
+        this.status = this.is_checkmate() ? 'checkmate' : this.status
     }
 
     clean_ava() {
