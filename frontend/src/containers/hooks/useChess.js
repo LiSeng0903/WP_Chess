@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-const SERVER_IP = '192.168.1.148'
+const SERVER_IP = 'localhost'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 clientWS.onopen = () => {
