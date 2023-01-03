@@ -55,6 +55,8 @@ const BoardWrapper = styled.div`
     background-color: #c4afac;
     display: flex;
     flex-direction: column;
+    border-style: solid;
+    border-color: black;
     
 `
 
@@ -66,8 +68,25 @@ const BoardRowWrapper = styled.div`
     flex-direction: row;
 `
 
+const LeftWrapper = styled.div`
+    height: 100vh;
+    width: 270px;
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+`
+
+const RightWrapper = styled.div`
+    height: 100vh;
+    width: 270px;
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+`
+
 const Board = () => {
-    const { board, focusP, setFocusP, preview, move, turn, myColor, winner } = useChess()
+    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status } = useChess()
 
     const clickHandler = ( x, y ) => {
         // not your turn 
@@ -92,39 +111,48 @@ const Board = () => {
     }
 
     return (
-        <BoardWrapper>
-            {
-                myColor == 'w' ? (
-                    board.map( ( row, x ) => {
-                        return (
-                            <BoardRowWrapper>
-                                {row.map( ( grd, y ) => {
-                                    console.log( focusP )
-                                    return (
-                                        <Grid x={x} y={y} image={imgDict[ grd.type ][ grd.color ]} ava={grd.ava} isFocus={( focusP[ 0 ] == x && focusP[ 1 ] == y )} clickHandler={( event ) => { clickHandler( x, y ) }} />
-                                    )
-                                } )}
-                            </BoardRowWrapper>
-                        )
-                    } )
-                ) :
-                    (
-                        board.slice( 0 ).reverse().map( ( row, x ) => {
+        <>
+            <LeftWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}>
+                <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "20px" }}>&ensp;Room Number: {roomNumber}</p>
+                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: myColor !== "w" ? "#63b331" : "#dd1616" }}>{status}!</p>}
+                <p style={{ alignSelf: "flex-end", fontFamily: "Comic Sans MS", fontSize: "35px" }}>{name}&ensp;</p>
+            </LeftWrapper>
+            <BoardWrapper>
+                {
+                    myColor == 'w' ? (
+                        board.map( ( row, x ) => {
                             return (
                                 <BoardRowWrapper>
-                                    {row.slice( 0 ).reverse().map( ( grd, y ) => {
+                                    {row.map( ( grd, y ) => {
                                         return (
-                                            <Grid x={7 - x} y={7 - y} image={imgDict[ grd.type ][ grd.color ]} ava={grd.ava} isFocus={( focusP[ 0 ] == 7 - x && focusP[ 1 ] == 7 - y )} clickHandler={( event ) => { clickHandler( 7 - x, 7 - y ) }} />
+                                            <Grid x={x} y={y} image={imgDict[ grd.type ][ grd.color ]} ava={grd.ava} isFocus={( focusP[ 0 ] == x && focusP[ 1 ] == y )} clickHandler={( event ) => { clickHandler( x, y ) }} />
                                         )
                                     } )}
                                 </BoardRowWrapper>
                             )
                         } )
-                    )
+                    ) :
+                        (
+                            board.slice( 0 ).reverse().map( ( row, x ) => {
+                                return (
+                                    <BoardRowWrapper>
+                                        {row.slice( 0 ).reverse().map( ( grd, y ) => {
+                                            return (
+                                                <Grid x={7 - x} y={7 - y} image={imgDict[ grd.type ][ grd.color ]} ava={grd.ava} isFocus={( focusP[ 0 ] == 7 - x && focusP[ 1 ] == 7 - y )} clickHandler={( event ) => { clickHandler( 7 - x, 7 - y ) }} />
+                                            )
+                                        } )}
+                                    </BoardRowWrapper>
+                                )
+                            } )
+                        )
 
-            }
-            {winner ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? <></> : <WaitModal /> )}
-        </BoardWrapper>
+                }
+                {winner ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? ( waitingForOpponent == true ? <WaitModal waitingJoin="true" /> : <></> ) : <WaitModal waitingJoin="false" /> )}
+            </BoardWrapper>
+            <RightWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}  >
+                <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "35px" }}>&ensp;{opponentName}</p>
+            </RightWrapper>
+        </>
     )
 }
 
