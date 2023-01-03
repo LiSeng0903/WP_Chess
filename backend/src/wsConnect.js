@@ -80,6 +80,7 @@ export default {
                         let wConnection = connections[game.wID]
                         let bConnection = connections[game.bID]
 
+
                         sendData( ['gameStarted', [game, bConnection.name]], wConnection.ws )
                         sendData( ['gameStarted', [game, wConnection.name]], bConnection.ws )
                     }
@@ -91,6 +92,9 @@ export default {
                 }
                 case "preview": {
                     let game = connections[connectionID].game
+
+                    const newBoard = game.preview( payload )
+                    const turn = game.turn
                     sendData( ["do", game], clientWS )
                     break
                 }
@@ -100,7 +104,8 @@ export default {
 
                     const newBoard = game.move( from, to )
                     const turn = game.turn
-                    boardcastDataToGame( game.GameID, ['do', game], games, connections )
+                    console.log( game.status )
+                    boardcastDataToGame( game.gameID, ['do', game], games, connections )
                     break
                 }
             }

@@ -497,7 +497,7 @@ class Game {
         }
         this.check_pawn_transform()
 
-        this.status = Game.is_check( this.board, ( this.turn == 'w' ? 'b' : 'w' ) ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
+        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
         return this.board
     }
 
