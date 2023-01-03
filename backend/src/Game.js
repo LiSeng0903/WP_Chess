@@ -9,15 +9,22 @@ class Game {
     static debug_init_board = () => {
         let board = Game.init_board()
 
-        board[0][4].color = 'nothing'
-        board[0][4].color = 'nothing'
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                board[x][y].type = 'nothing'
+                board[x][y].color = 'nothing'
+            }
+        }
 
-        board[3][4].color = 'w'
-        board[3][4].type = 'rook'
+        board[0][4].color = 'b'
+        board[0][4].type = 'king'
 
-        board[2][2].color = 'b'
-        board[2][2].type = 'rook'
-
+        board[0][0].color = 'w'
+        board[0][0].type = 'rook'
+        board[2][2].color = 'w'
+        board[2][2].type = 'queen'
+        board[5][2].color = 'w'
+        board[5][2].type = 'king'
         return board
     }
 
@@ -403,7 +410,7 @@ class Game {
                 this.previewList[x].push( [[]] )
             }
         }
-        this.update_preview_list()
+        this.update_preview_list( 'w' )
     }
 
     move( from, to ) {
@@ -434,10 +441,12 @@ class Game {
             this.turn = 'w'
         }
         this.check_pawn_transform()
+        this.update_preview_list()
 
         this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
+        this.status = this.is_checkmate() ? 'checkmate' : this.status
 
-        this.update_preview_list()
+        console.log( this.is_checkmate() )
     }
 
     preview( prePos ) {
@@ -482,6 +491,18 @@ class Game {
         }
     }
 
+    is_checkmate() {
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                if ( this.previewList[x][y].length != 0 ) {
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
     player_join( playerID ) {
         if ( this.playerCnt == 0 ) {
             this.wID = playerID
@@ -504,6 +525,7 @@ class Game {
             for ( let y = 0; y < BOARD_LEN; y++ ) {
                 // only check grid with current color 
                 if ( this.board[x][y].color != this.turn ) {
+                    this.previewList[x][y] = []
                     continue
                 }
 
@@ -515,11 +537,11 @@ class Game {
                 // filter check 
                 avaList = avaList.filter( ( avaPos ) => {
                     let trialBoard = JSON.parse( JSON.stringify( this.board ) )
-                    let [preX, preY] = prePos
+                    let [curX, curY] = curPos
                     let [avaX, avaY] = avaPos
 
-                    trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[preX][preY] ) )
-                    trialBoard[preX][preY] = {
+                    trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[curX][curY] ) )
+                    trialBoard[curX][curY] = {
                         type: 'nothing',
                         color: 'nothing',
                         ava: false
