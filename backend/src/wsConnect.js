@@ -1,12 +1,23 @@
 import { Game } from "./Game.js"
 
-const sendData = ( data, ws ) => {
-    ws.send( JSON.stringify( data ) )
+const sendData = ( data, clientWS ) => {
+    clientWS.send( JSON.stringify( data ) )
+    return
 }
 
-const boardcastMessage = ( wss, data ) => {
-    wss.clients.forEach( client => {
-        sendData( data, client )
+const boardcastDataToGame = ( gameID, data, games, connections ) => {
+    let game = games[gameID]
+    let wWS = connections[game.wID].ws
+    let bWS = connections[game.bID].ws
+
+    sendData( data, wWS )
+    sendData( data, bWS )
+    return
+}
+
+const boardcastData = ( serverWS, data ) => {
+    serverWS.clients.forEach( ( clientWS ) => {
+        sendData( data, clientWS )
     } )
 }
 
@@ -20,48 +31,81 @@ const boardcastMessage = ( wss, data ) => {
 //     turn: 'w' || 'b',
 // }
 
-
 export default {
-    do: ( ws, wss, game ) => {
+    onMessage: ( clientWS, games, connections, connectionID ) => {
         return ( ( async ( byteString ) => {
             const { data } = byteString
             const [task, payload] = JSON.parse( data )
             switch ( task ) {
                 case "createRoom": {
-                    // success
-                    sendData( ['createRoomSuccess'], game, playerColor )
+                    // get info
+                    let name = payload
 
-                    // fail
-                    sendData( ['createRoomFail'] )
+                    // create game 
+                    let newGame = new Game()
+                    newGame.player_join( connectionID )
+
+                    // store game 
+                    games[newGame.gameID] = newGame
+
+                    // store name 
+                    connections[connectionID].name = name
+                    connections[connectionID].game = newGame
+
+                    // send message 
+                    sendData( ['createRoomSuccess', [newGame, 'w', newGame.gameID]], clientWS )
+                    break
                 }
-                case "login": {
-                    let [name, roomNumber] = payload // name: String; rN: String
-                }
-                case "init": {
-                    console.log( "player connected" )
-                    const newBoard = game.board
-                    const turn = game.turn
-                    let playerColor = ''
-                    if ( game.playerCnt === 1 ) {
-                        playerColor = 'b'
-                    } else {
-                        playerColor = 'w'
-                        game.playerCnt++
+                case "joinRoom": {
+                    // get info
+                    let [gameID, name] = payload
+
+                    // join game 
+                    let game = games[gameID]
+
+                    // store name
+                    connections[connectionID].name = name
+
+                    // not exist game 
+                    if ( games[gameID] == undefined ) {
+                        sendData( ['joinRoomFailed', 'Game doesn\'t exist'], clientWS )
+                        return
                     }
-                    sendData( ["init", { newBoard, turn, playerColor }], ws )
+
+                    if ( game.player_join( connectionID ) ) {
+                        connections[connectionID].game = game
+                        sendData( ['joinRoomSuccess', [game, 'b', gameID]], clientWS )
+
+                        // Game start
+                        let wConnection = connections[game.wID]
+                        let bConnection = connections[game.bID]
+
+
+                        sendData( ['gameStarted', [game, bConnection.name]], wConnection.ws )
+                        sendData( ['gameStarted', [game, wConnection.name]], bConnection.ws )
+                    }
+                    else {
+                        sendData( ['joinRoomFailed', 'Game is full'], clientWS )
+                        return
+                    }
                     break
                 }
                 case "preview": {
+                    let game = connections[connectionID].game
+
                     const newBoard = game.preview( payload )
                     const turn = game.turn
-                    sendData( ["do", { newBoard, turn }], ws )
+                    sendData( ["do", game], clientWS )
                     break
                 }
                 case "move": {
+                    let game = connections[connectionID].game
                     const { from, to } = payload
+
                     const newBoard = game.move( from, to )
                     const turn = game.turn
-                    boardcastMessage( wss, ["do", { newBoard, turn }] )
+                    console.log( game.status )
+                    boardcastDataToGame( game.gameID, ['do', game], games, connections )
                     break
                 }
             }

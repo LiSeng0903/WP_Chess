@@ -1,5 +1,6 @@
-const DEBUG = true
-const CHECK_COLOR = 'b'
+import { uuid } from "uuidv4"
+
+const DEBUG = false
 const BOARD_LEN = 8
 
 class Game {
@@ -458,23 +459,14 @@ class Game {
     }
 
     constructor() {
+        this.gameID = uuid()
+        this.wID = ''
+        this.bID = ''
+        this.status = ''
+
         this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
         this.turn = 'w'
         this.playerCnt = 0
-
-        this.special_rule = {
-            castling: {
-                // 入堡
-                'b': {
-                    'q_side': true,
-                    'k_side': true
-                },
-                'w': {
-                    'q_side': true,
-                    'k_side': true
-                }
-            }
-        }
     }
 
     move( from, to ) {
@@ -505,7 +497,7 @@ class Game {
         }
         this.check_pawn_transform()
 
-        console.log( Game.is_check( this.board, CHECK_COLOR ) )
+        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
         return this.board
     }
 
@@ -561,6 +553,23 @@ class Game {
             if ( this.board[7][y].type == 'pawn' ) {
                 this.board[7][y].type = 'queen'
             }
+        }
+    }
+
+    player_join( playerID ) {
+        if ( this.playerCnt == 0 ) {
+            this.wID = playerID
+            this.playerCnt += 1
+            return true
+        }
+        else if ( this.playerCnt == 1 ) {
+            this.bID = playerID
+            this.playerCnt += 1
+            return true
+        }
+        else {
+            // Full
+            return false
         }
     }
 }
