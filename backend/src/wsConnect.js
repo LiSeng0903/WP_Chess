@@ -71,9 +71,12 @@ export default {
 
                     // Already log in
                     if ( playerConnections[playerID] ) {
-                        connections[playerConnections[playerID].connectionID].playerID = ''
+                        // Get wss 
                         let pastWS = playerConnections[playerID].ws
                         playerConnections[playerID].ws = clientWS
+
+                        // update connection info 
+                        connections[playerConnections[playerID].connectionID].playerID = ''
 
                         if ( playerConnections[playerID].gameID ) {
                             // is playing a game 
@@ -86,17 +89,18 @@ export default {
 
                         sendData( ['Logged in from other place'], pastWS )
                     }
+                    else {
+                        // store connection info 
+                        playerConnections[playerID] = {
+                            ws: clientWS,
+                            gameID: '',
+                            connectionID: connectionID
+                        }
+                    }
 
                     // set connections 
                     connections[connectionID] = {
                         playerID: playerID
-                    }
-
-                    // store connection info 
-                    playerConnections[playerID] = {
-                        ws: clientWS,
-                        gameID: '',
-                        connectionID: connectionID
                     }
 
                     sendData( ['rp_login', ['Success', playerID]], clientWS )
@@ -126,6 +130,7 @@ export default {
                     console.log( `Create new game by ${playerID}` )
                     break
                 }
+
                 case "joinRoom": {
                     // get info
                     let gameID = payload
@@ -165,14 +170,15 @@ export default {
                     }
                     break
                 }
+
                 case "preview": {
                     let playerID = connections[connectionID].playerID
                     let gameID = playerConnections[playerID].gameID
                     let game = games[gameID]
                     let prePos = payload
 
-
                     game.preview( prePos )
+
                     sendData( ["do", game], clientWS )
                     console.log( 'Preview' )
                     break
