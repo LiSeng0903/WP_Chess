@@ -73,6 +73,7 @@ const ChessContext = createContext(
         createRoom: () => {},
         joinRoom: () => {},
         backToLogin: () => {},
+        backToJoin: () => {},
 
         messageApi: {},
         contextHolder: {},
@@ -128,6 +129,24 @@ const ChessProvider = ( props ) => {
         setRoomNumber( "Welcome!" )
         setWaitingForOpponent( true )
         setHasLogin( false )
+        setHasStarted( false )
+        setOtherConnect( false )
+    }
+
+    const backToJoin = () => {
+        setRegisterFail( false )
+        setBoard( [] )
+        setTurn( "" )
+        setMyColor( "" )
+        setFocusP( [] )
+        setWinner( "" )
+        setStatus( "" )
+        setLoginError( false )
+        setJoinError( false )
+
+        setOpponentName( "Waiting for Opponent" )
+        setRoomNumber( "Welcome!" )
+        setWaitingForOpponent( true )
         setHasStarted( false )
         setOtherConnect( false )
     }
@@ -250,8 +269,14 @@ const ChessProvider = ( props ) => {
                 const game = response
                 setBoard( game.board )
                 setTurn( game.turn )
-                console.log( game.status )
                 setStatus( game.status )
+                if ( game.status === "checkmate" ) {
+                    if ( game.turn === "w" ) {
+                        setWinner( "b" )
+                    } else {
+                        setWinner( "w" )
+                    }
+                }
                 break
             }
 
@@ -379,6 +404,7 @@ const ChessProvider = ( props ) => {
                         createRoom,
                         joinRoom,
                         backToLogin,
+                        backToJoin,
                     }
                 }
                 {...props}
