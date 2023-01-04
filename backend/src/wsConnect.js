@@ -1,5 +1,7 @@
 // import 
 import { Game } from "./Game.js"
+import { Player } from '../models/Player.js'
+import bcrypt from 'bcryptjs'
 
 // functions 
 const sendData = ( data, clientWS ) => {
@@ -16,6 +18,9 @@ const boardcastDataToGame = ( gameID, data, games, connections ) => {
     sendData( data, bWS )
 }
 
+// constant 
+const SALT_ROUND = 10
+
 export default {
     onMessage: ( clientWS, connectionID, games, connections ) => {
         return ( ( async ( byteString ) => {
@@ -23,6 +28,39 @@ export default {
             const [task, payload] = JSON.parse( data )
 
             switch ( task ) {
+                case "register": {
+                    let [name, password] = payload
+                    let replyMsg = ''
+
+                    const player = new Player( { name: name, password: bcrypt.hashSync( password, 10 ) } )
+                    try {
+                        await player.save()
+                        console.log( 'Register success' )
+                        replyMsg = 'register success'
+                    }
+                    catch ( error ) {
+                        // throw new Error( 'Message DB save error' + error )
+                        replyMsg = 'register failed'
+                    }
+
+                    sendData( ['rp_register', replyMsg], clientWS )
+                    break
+                }
+                case "login": {
+                    let [name, password] = payload
+                    let player = await Player.findOne( { name: name } )
+
+                    let replyMsg = ''
+                    if ( bcrypt.compareSync( password, player.password ) ) {
+                        replyMsg = 'Success'
+                    }
+                    else {
+                        replyMsg = 'Failed'
+                    }
+
+                    sendData( ['rp_login', [replyMsg, name]], clientWS )
+                    break
+                }
                 case "createRoom": {
                     // get info
                     let name = payload
