@@ -436,15 +436,22 @@ class Game {
         // clean board 
         this.clean_ava()
 
-
-        // TODO: whether is pass 
-
         // move 
         let [fromX, fromY] = from
         let [toX, toY] = to
         let piece = this.board[fromX][fromY]
 
         if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
+            if ( ( piece.type == 'pawn' ) && ( toY != fromY ) && ( this.board[toX][toY].type == 'nothing' ) ) {
+                if ( piece.color == 'w' ) {
+                    this.board[toX + 1][toY].type = 'nothing'
+                    this.board[toX + 1][toY].color = 'nothing'
+                }
+                else {
+                    this.board[toX - 1][toY].type = 'nothing'
+                    this.board[toX - 1][toY].color = 'nothing'
+                }
+            }
 
             this.board[fromX][fromY] = {
                 type: 'nothing',
