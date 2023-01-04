@@ -87,7 +87,7 @@ const RightWrapper = styled.div`
 `
 
 const Board = () => {
-    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status, otherConnect, backToLogin } = useChess()
+    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status, otherConnect, backToLogin, endGame } = useChess()
 
     const clickHandler = ( x, y ) => {
         // not your turn 
@@ -148,7 +148,7 @@ const Board = () => {
                         )
 
                 }
-                {winner !== "" ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? ( waitingForOpponent == true ? <WaitModal waitingJoin="true" /> : <></> ) : <WaitModal waitingJoin="false" /> )}
+                {endGame ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? ( waitingForOpponent == true ? <WaitModal waitingJoin="true" /> : <></> ) : <WaitModal waitingJoin="false" /> )}
             </BoardWrapper>
             <RightWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}  >
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "35px" }}>&ensp;{opponentName}</p>
