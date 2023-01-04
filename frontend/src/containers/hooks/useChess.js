@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { message } from 'antd'
 
 const SERVER_IP = '192.168.0.144'
 // const SERVER_IP = 'localhost'
@@ -71,6 +72,10 @@ const ChessContext = createContext(
         register: () => {},
         createRoom: () => {},
         joinRoom: () => {},
+
+        messageApi: {},
+        contextHolder: {},
+        registerSuccess: () => {},
     }
 )
 
@@ -95,7 +100,15 @@ const ChessProvider = ( props ) => {
     const [ loginErrorMsg, setLoginErrorMsg ] = useState( "" )
     const [ joinError, setJoinError ] = useState( false )
 
+    // jump msg
+    const [ messageApi, contextHolder ] = message.useMessage()
 
+    const registerSuccess = () => {
+        messageApi.open( {
+            type: "success",
+            content: "Register Successed."
+        } )
+    }
 
     // sending
     const preview = ( previewPos ) => {
@@ -162,6 +175,7 @@ const ChessProvider = ( props ) => {
                 const msg = response
                 if ( msg === "Success" ) {
                     setRegisterFail( false )
+                    registerSuccess()
                 } else {
                     setRegisterFail( true )
                     setRegisterFailMsg( msg )
@@ -224,6 +238,10 @@ const ChessProvider = ( props ) => {
                 setStatus( game.status )
                 break
             }
+
+            case "Logged in from other place": {
+                break
+            }
         }
     }
 
@@ -265,70 +283,73 @@ const ChessProvider = ( props ) => {
     }
 
     return (
-        <ChessContext.Provider
-            value={
-                {
-                    hasLogin,
-                    setHasLogin,
+        <>
+            {contextHolder}
+            < ChessContext.Provider
+                value={
+                    {
+                        hasLogin,
+                        setHasLogin,
 
-                    hasStarted,
-                    setHasStarted,
+                        hasStarted,
+                        setHasStarted,
 
-                    registerFail,
-                    setRegisterFail,
+                        registerFail,
+                        setRegisterFail,
 
-                    registerFailMsg,
-                    setRegisterFailMsg,
+                        registerFailMsg,
+                        setRegisterFailMsg,
 
-                    board,
-                    setBoard,
+                        board,
+                        setBoard,
 
-                    turn,
-                    setTurn,
+                        turn,
+                        setTurn,
 
-                    myColor,
-                    setMyColor,
+                        myColor,
+                        setMyColor,
 
-                    focusP,
-                    setFocusP,
+                        focusP,
+                        setFocusP,
 
-                    winner,
-                    setWinner,
+                        winner,
+                        setWinner,
 
-                    name,
-                    setName,
+                        name,
+                        setName,
 
-                    opponentName,
-                    setOpponentName,
+                        opponentName,
+                        setOpponentName,
 
-                    roomNumber,
-                    setRoomNumber,
+                        roomNumber,
+                        setRoomNumber,
 
-                    status,
-                    setStatus,
+                        status,
+                        setStatus,
 
-                    waitingForOpponent,
-                    setWaitingForOpponent,
+                        waitingForOpponent,
+                        setWaitingForOpponent,
 
-                    loginError,
-                    setLoginError,
+                        loginError,
+                        setLoginError,
 
-                    loginErrorMsg,
-                    setLoginErrorMsg,
+                        loginErrorMsg,
+                        setLoginErrorMsg,
 
-                    joinError,
-                    setJoinError,
+                        joinError,
+                        setJoinError,
 
-                    preview,
-                    move,
-                    login,
-                    register,
-                    createRoom,
-                    joinRoom,
+                        preview,
+                        move,
+                        login,
+                        register,
+                        createRoom,
+                        joinRoom,
+                    }
                 }
-            }
-            {...props}
-        />
+                {...props}
+            />
+        </>
     )
 }
 

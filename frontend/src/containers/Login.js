@@ -1,8 +1,6 @@
 import styled from "styled-components"
 import Enter from "../components/Enter"
 import { useChess } from "./hooks/useChess"
-import { Button, Modal, Form, Input } from 'antd'
-import { useState } from "react"
 import RegisterModal from "../components/RegisterModal"
 
 const LoginWrapper = styled.div`
