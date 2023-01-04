@@ -33,15 +33,16 @@ export default {
                     let [playerID, password] = payload
 
                     const player = new Player( { name: playerID, password: bcrypt.hashSync( password, SALT_ROUND ) } )
+
                     try {
+                        // register
                         await player.save()
                         sendData( ['rp_register', 'Success'], clientWS )
                         console.log( `Register success: ${playerID}` )
                     }
                     catch ( error ) {
-                        // throw new Error( 'Message DB save error' + error )
                         sendData( ['rp_register', `Failed: Player ID is used`], clientWS )
-                        console.log( `Register failed` )
+                        console.log( `Register failed: repeated player ID` )
                         break
                     }
                     break
@@ -51,17 +52,31 @@ export default {
                     // Get information 
                     let [playerID, password] = payload
                     let player = await Player.findOne( { name: playerID } )
+
+                    // Login failed: haven't registered 
                     if ( !player ) {
                         sendData( ['rp_login', ['Failed: Player haven\'t registered.', playerID]], clientWS )
+                        console.log( `Login failed: ${playerID} haven\'t registered` )
                         break
                     }
 
-                    let replyMsg = ''
+                    // Login failed: incorred password 
                     if ( bcrypt.compareSync( password, player.password ) == false ) {
-                        sendData( ['rp_login', ['Failed: Wrong password.', playerID]], clientWS )
+                        sendData( ['rp_login', ['Failed: Incorrect password.', playerID]], clientWS )
+                        console.log( `Login failed: Incorrect password` )
                         break
                     }
-                    replyMsg = 'Success'
+
+                    // Login success 
+
+                    // Already log in
+                    if ( playerConnections[playerID] ) {
+                        connections[playerConnections[playerID].connectionID].playerID = ''
+                        let pastWS = playerConnections[playerID].ws
+                        playerConnections[playerID].ws = clientWS
+
+                        sendData( ['Logged in from other place'], pastWS )
+                    }
 
                     // set connections 
                     connections[connectionID] = {
@@ -71,15 +86,16 @@ export default {
                     // store connection info 
                     playerConnections[playerID] = {
                         ws: clientWS,
-                        gameID: ''
+                        gameID: '',
+                        connectionID: connectionID
                     }
 
                     sendData( ['rp_login', ['Success', playerID]], clientWS )
-
-
+                    console.log( 'Login success' )
 
                     break
                 }
+
                 case "createRoom": {
                     // get info
                     let playerID = connections[connectionID].playerID
