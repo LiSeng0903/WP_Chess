@@ -409,6 +409,10 @@ class Game {
                     'long': true,
                     'short': true
                 }
+            },
+            'pass': {
+                'w': -1,
+                'b': -1
             }
         }
 
@@ -440,7 +444,6 @@ class Game {
         let [toX, toY] = to
         let piece = this.board[fromX][fromY]
 
-        // TODO: Whether is castling 
         if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
 
             this.board[fromX][fromY] = {
@@ -469,7 +472,6 @@ class Game {
                     this.board[fromX][7].color = 'nothing'
                 }
             }
-
         }
         else {
             // cannot move
@@ -490,7 +492,14 @@ class Game {
             this.special_rule['castling'][this.turn]['short'] = false
         }
 
-        // TODO: check pass condition 
+        // Check pass condition 
+        if ( ( piece.type == 'pawn' ) && ( Math.abs( toX - fromX ) == 2 ) ) {
+            this.special_rule['pass'][piece.color] = toY
+        }
+        else {
+            this.special_rule['pass'][piece.color] = -1
+        }
+
         this.check_pawn_transform()
         this.switch_turn_and_update()
     }
@@ -651,6 +660,82 @@ class Game {
 
                 if ( Game.is_check( trialBoard, this.turn ) == false ) {
                     this.previewList[x][4].push( [x, 6] )
+                }
+            }
+        }
+
+        // TODO: pass
+        if ( this.turn == 'w' && this.special_rule['pass']['b'] != -1 ) {
+            let y = this.special_rule['pass']['b']
+
+            let leftP = Game.get_info( [3, y - 1], this.board )
+            if ( leftP.type == 'pawn' && leftP.color == 'w' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[3][y].type = 'nothing'
+                trialBoard[3][y].color = 'nothing'
+
+                trialBoard[3][y - 1].type = 'nothing'
+                trialBoard[3][y - 1].color = 'nothing'
+                trialBoard[2][y].type = 'pawn'
+                trialBoard[2][y].color = 'w'
+
+                if ( Game.is_check( trialBoard, 'w' ) == false ) {
+                    this.previewList[3][y - 1].push( [2, y] )
+                }
+            }
+
+            let rightP = Game.get_info( [3, y + 1], this.board )
+            if ( rightP.type == 'pawn' && rightP.color == 'w' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[3][y].type = 'nothing'
+                trialBoard[3][y].color = 'nothing'
+
+                trialBoard[3][y + 1].type = 'nothing'
+                trialBoard[3][y + 1].color = 'nothing'
+                trialBoard[2][y].type = 'pawn'
+                trialBoard[2][y].color = 'w'
+
+                if ( Game.is_check( trialBoard, 'w' ) == false ) {
+                    this.previewList[3][y + 1].push( [2, y] )
+                }
+            }
+        }
+        if ( this.turn == 'b' && this.special_rule['pass']['w'] != -1 ) {
+            let y = this.special_rule['pass']['w']
+
+            let leftP = Game.get_info( [4, y - 1], this.board )
+            if ( leftP.type == 'pawn' && leftP.color == 'b' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[5][y].type = 'nothing'
+                trialBoard[5][y].color = 'nothing'
+
+                trialBoard[4][y - 1].type = 'nothing'
+                trialBoard[4][y - 1].color = 'nothing'
+                trialBoard[5][y].type = 'pawn'
+                trialBoard[5][y].color = 'b'
+
+                if ( Game.is_check( trialBoard, 'b' ) == false ) {
+                    this.previewList[4][y - 1].push( [5, y] )
+                }
+            }
+
+            let rightP = Game.get_info( [4, y + 1], this.board )
+            if ( rightP.type == 'pawn' && rightP.color == 'b' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[5][y].type = 'nothing'
+                trialBoard[5][y].color = 'nothing'
+
+                trialBoard[4][y + 1].type = 'nothing'
+                trialBoard[4][y + 1].color = 'nothing'
+                trialBoard[5][y].type = 'pawn'
+                trialBoard[5][y].color = 'b'
+
+                if ( Game.is_check( trialBoard, 'b' ) == false ) {
+                    this.previewList[4][y + 1].push( [5, y] )
                 }
             }
         }
