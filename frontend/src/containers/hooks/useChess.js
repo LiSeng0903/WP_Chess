@@ -262,6 +262,7 @@ const ChessProvider = ( props ) => {
 
             case "sudden_game": {
                 const [ game, opName, gameID, clr ] = response
+                setWaitingForOpponent( false )
                 setBoard( game.board )
                 setTurn( game.turn )
                 setStatus( game.status )
