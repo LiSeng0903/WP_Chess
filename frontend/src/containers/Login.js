@@ -35,6 +35,7 @@ const Title = styled.div`
     align-items: center;
     font-size: 20px;
     color: white;
+    font-family: "Comic Sans MS"
 `
 const FooterStyle = styled.div`
     color: white;
