@@ -108,7 +108,7 @@ export default {
 
                     let game = games[gameID]
                     if ( game.player_join( playerID ) ) {
-                        // join game 
+                        // join game
                         playerConnections[playerID].gameID = game.gameID
 
                         // payload: [game, color, gameID]
@@ -116,10 +116,16 @@ export default {
 
                         // send start msg to both players 
                         // payload: [game, opponentName ]
-                        let bConnection = playerConnections[game.wID]
-                        let wConnection = playerConnections[game.wID]
-                        sendData( ['gameStarted', [game, bConnection.playerID]], wConnection.ws )
-                        sendData( ['gameStarted', [game, wConnection.playerID]], bConnection.ws )
+
+
+                        let wWS = playerConnections[game.wID].ws
+                        let bWS = playerConnections[game.bID].ws
+
+                        console.log( bWS )
+                        console.log( wWS )
+
+                        sendData( ['gameStarted', [game, game.bID]], wWS )
+                        sendData( ['gameStarted', [game, game.wID]], bWS )
                     }
                     else {
                         // Game full
@@ -129,15 +135,20 @@ export default {
                     break
                 }
                 case "preview": {
-                    let game = connections[connectionID].game
+                    let playerID = connections[connectionID].playerID
+                    let gameID = playerConnections[playerID].gameID
+                    let game = games[gameID]
                     let prePos = payload
+
 
                     game.preview( prePos )
                     sendData( ["do", game], clientWS )
                     break
                 }
                 case "move": {
-                    let game = connections[connectionID].game
+                    let playerID = connections[connectionID].playerID
+                    let gameID = playerConnections[playerID].gameID
+                    let game = games[gameID]
                     const { from, to } = payload
 
                     game.move( from, to )
