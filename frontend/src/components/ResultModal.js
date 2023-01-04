@@ -38,7 +38,7 @@ const ResultModal = ( { win } ) => {
             <ResultTextWrapper>
                 <p>♛ You {win ? 'Win!' : 'Lose'} ♛</p>
                 <Button key="Back to Room Page" type="primary" onClick={backToJoin}>
-                    Back to Login Page
+                    Back to Room Page
                 </Button>
             </ResultTextWrapper>
         </>

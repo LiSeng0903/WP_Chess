@@ -36,7 +36,7 @@ const ChessContext = createContext(
         focusP: [],
         setFocusP: () => {},
 
-        winner: '',
+        winner: "",
         setWinner: () => {},
 
         name: "", //player name
@@ -91,7 +91,7 @@ const ChessProvider = ( props ) => {
     const [ turn, setTurn ] = useState( '' )
     const [ myColor, setMyColor ] = useState( '' )
     const [ focusP, setFocusP ] = useState( [] )
-    const [ winner, setWinner ] = useState( '' )
+    const [ winner, setWinner ] = useState( "" )
     const [ name, setName ] = useState( "Player" )
     const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
     const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
@@ -195,7 +195,6 @@ const ChessProvider = ( props ) => {
         switch ( task ) {
 
             case "rp_login": {
-                console.log( response )
                 const [ type, user ] = response
                 if ( type === "Success" ) {
                     setName( user )
@@ -271,11 +270,12 @@ const ChessProvider = ( props ) => {
                 setTurn( game.turn )
                 setStatus( game.status )
                 if ( game.status === "checkmate" ) {
-                    if ( game.turn === "w" ) {
-                        setWinner( "b" )
-                    } else {
-                        setWinner( "w" )
-                    }
+                    // if ( game.turn === "w" ) {
+                    //     setWinner( "b" )
+                    // } else {
+                    //     setWinner( "w" )
+                    //     console.log( winner === "" )
+                    // }
                 }
                 break
             }
