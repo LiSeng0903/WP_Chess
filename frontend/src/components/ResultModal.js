@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { useChess } from "../containers/hooks/useChess"
 
 const ResultModalWrapper = styled.div`
     height: 100px;
@@ -27,12 +28,17 @@ const ResultTextWrapper = styled.div`
 `
 
 const ResultModal = ( { win } ) => {
+    const { backToJoin } = useChess()
+
     return (
         <>
             <ResultModalWrapper>
             </ResultModalWrapper>
             <ResultTextWrapper>
                 <p>♛ You {win ? 'Win!' : 'Lose'} ♛</p>
+                <Button key="Back to Room Page" type="primary" onClick={backToJoin}>
+                    Back to Login Page
+                </Button>
             </ResultTextWrapper>
         </>
     )
