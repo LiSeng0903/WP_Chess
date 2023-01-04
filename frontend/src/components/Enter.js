@@ -55,7 +55,7 @@ const Enter = ( { setLoginError } ) => {
 
             <Form.Item
                 wrapperCol={{
-                    offset: 8,
+                    offset: 9,
                     span: 16,
                 }}
             >

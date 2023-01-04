@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-// const SERVER_IP = '192.168.0.144'
-const SERVER_IP = 'localhost'
+const SERVER_IP = '192.168.0.144'
+// const SERVER_IP = 'localhost'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 const sendData = async ( data ) => {
@@ -16,6 +16,9 @@ const ChessContext = createContext(
 
         hasStarted: Boolean,
         setHasStarted: () => {},
+
+        registerFail: Boolean,
+        setRegisterFail: () => {},
 
         board: [], // 8*8 metrix 
         setBoard: () => {},
@@ -53,12 +56,16 @@ const ChessContext = createContext(
         loginError: Boolean, //determone if user has enter correct or valid info
         setLoginError: () => {},
 
+        loginErrorMsg: "",
+        setLoginErrorMsg: () => {},
+
         joinError: Boolean,
         setJoinError: () => {},
 
         preview: () => {},
         move: () => {},
         login: () => {},
+        register: () => {},
         createRoom: () => {},
         joinRoom: () => {},
     }
@@ -68,6 +75,7 @@ const ChessContext = createContext(
 const ChessProvider = ( props ) => {
     const [ hasLogin, setHasLogin ] = useState( false )
     const [ hasStarted, setHasStarted ] = useState( false )
+    const [ registerFail, setRegisterFail ] = useState( false )
     const [ board, setBoard ] = useState( [] )
     const [ turn, setTurn ] = useState( '' )
     const [ myColor, setMyColor ] = useState( '' )
@@ -80,6 +88,7 @@ const ChessProvider = ( props ) => {
     const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
     const [ status, setStatus ] = useState( "" )
     const [ loginError, setLoginError ] = useState( false )
+    const [ loginErrorMsg, setLoginErrorMsg ] = useState( "" )
     const [ joinError, setJoinError ] = useState( false )
 
 
@@ -100,6 +109,11 @@ const ChessProvider = ( props ) => {
         sendData( [ "login", [ name, password ] ] )
     }
 
+    const register = ( name, password ) => {
+        // register
+        sendData( [ "register", [ name, password ] ] )
+    }
+
     const init = () => {
         // get initial board 
         sendData( [ 'init' ] )
@@ -107,12 +121,12 @@ const ChessProvider = ( props ) => {
 
     const createRoom = () => {
         // first person create a game room
-        sendData( [ "createRoom", name ] )
+        sendData( [ "createRoom" ] )
     }
 
-    const joinRoom = ( roomNumber, name ) => {
+    const joinRoom = ( roomNumber ) => {
         // second person join a room
-        sendData( [ "joinRoom", [ roomNumber, name ] ] )
+        sendData( [ "joinRoom", roomNumber ] )
     }
 
 
@@ -134,7 +148,18 @@ const ChessProvider = ( props ) => {
                     setName( user )
                     setHasLogin( true )
                 } else {
+                    setLoginErrorMsg( type )
                     setLoginError( true )
+                }
+                break
+            }
+
+            case "rp_register": {
+                const msg = response
+                if ( msg === "Success" ) {
+                    setRegisterFail( false )
+                } else {
+                    setRegisterFail( true )
                 }
                 break
             }
@@ -168,6 +193,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "gameStarted": {
+                console.log( "GS" )
                 const [ newGame, opName ] = response
                 setWaitingForOpponent( false )
                 setBoard( newGame.board )
@@ -243,6 +269,9 @@ const ChessProvider = ( props ) => {
                     hasStarted,
                     setHasStarted,
 
+                    registerFail,
+                    setRegisterFail,
+
                     board,
                     setBoard,
 
@@ -276,12 +305,16 @@ const ChessProvider = ( props ) => {
                     loginError,
                     setLoginError,
 
+                    loginErrorMsg,
+                    setLoginErrorMsg,
+
                     joinError,
                     setJoinError,
 
                     preview,
                     move,
                     login,
+                    register,
                     createRoom,
                     joinRoom,
                 }

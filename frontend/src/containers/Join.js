@@ -35,7 +35,7 @@ const SearchWrapper = styled.div`
 `
 
 const Join = () => {
-    const { name, joinError, createRoom, joinRoom } = useChess()
+    const { joinError, createRoom, joinRoom } = useChess()
 
     return (
         <JoinWrapper>
@@ -47,7 +47,7 @@ const Join = () => {
                     allowClear
                     enterButton="Join!"
                     size="meduim"
-                    onSearch={( value ) => joinRoom( value, name )}
+                    onSearch={( value ) => joinRoom( value )}
                 />
                 <p style={{ fontFamily: "cursive", fontStyle: "oblique", fontSize: "30px" }}>or</p>
                 <Button type="primary" onClick={createRoom}>Create a Room</Button>
