@@ -4,6 +4,7 @@ import { useChess } from "./hooks/useChess"
 import { Grid } from "../components/Grid"
 import { WaitModal } from "../components/WaitModal"
 import { ResultModal } from "../components/ResultModal"
+import { Button, Modal } from 'antd'
 
 // import images 
 import blackBishopImg from '../imgs/blackBishop.png'
@@ -86,7 +87,7 @@ const RightWrapper = styled.div`
 `
 
 const Board = () => {
-    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status } = useChess()
+    const { board, focusP, setFocusP, preview, move, turn, myColor, winner, roomNumber, name, opponentName, waitingForOpponent, status, otherConnect, backToLogin } = useChess()
 
     const clickHandler = ( x, y ) => {
         // not your turn 
@@ -152,6 +153,18 @@ const Board = () => {
             <RightWrapper style={{ backgroundColor: myColor === "w" ? "#294b14" : "#8a0e0e" }}  >
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "35px" }}>&ensp;{opponentName}</p>
             </RightWrapper>
+            <Modal
+                open={otherConnect}
+                title="Error"
+                footer={[
+                    <Button key="Back to Login Page" type="primary" onClick={backToLogin}>
+                        Back to Login Page
+                    </Button>
+                ]}
+            >
+                <p>Ops... your account is logged in from other place...</p>
+                <p>Please return to the login page.</p>
+            </Modal>
         </>
     )
 }

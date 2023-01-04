@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { message } from 'antd'
 
 const SERVER_IP = '192.168.0.144'
+// const SERVER_IP = 'localhost'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 const sendData = async ( data ) => {
@@ -15,6 +17,12 @@ const ChessContext = createContext(
 
         hasStarted: Boolean,
         setHasStarted: () => {},
+
+        registerFail: Boolean,
+        setRegisterFail: () => {},
+
+        registerFailMsg: "",
+        setRegisterFailMsg: () => {},
 
         board: [], // 8*8 metrix 
         setBoard: () => {},
@@ -40,9 +48,6 @@ const ChessContext = createContext(
         roomNumber: "", //play room number (string)
         setRoomNumber: () => {},
 
-        connectionID: "",
-        setConnectionID: () => {},
-
         status: "",
         setStatus: () => {},
 
@@ -52,14 +57,26 @@ const ChessContext = createContext(
         loginError: Boolean, //determone if user has enter correct or valid info
         setLoginError: () => {},
 
+        loginErrorMsg: "",
+        setLoginErrorMsg: () => {},
+
         joinError: Boolean,
         setJoinError: () => {},
+
+        otherConnect: Boolean,
+        setOtherConnect: () => {},
 
         preview: () => {},
         move: () => {},
         login: () => {},
+        register: () => {},
         createRoom: () => {},
         joinRoom: () => {},
+        backToLogin: () => {},
+
+        messageApi: {},
+        contextHolder: {},
+        registerSuccess: () => {},
     }
 )
 
@@ -67,6 +84,8 @@ const ChessContext = createContext(
 const ChessProvider = ( props ) => {
     const [ hasLogin, setHasLogin ] = useState( false )
     const [ hasStarted, setHasStarted ] = useState( false )
+    const [ registerFail, setRegisterFail ] = useState( false )
+    const [ registerFailMsg, setRegisterFailMsg ] = useState( "" )
     const [ board, setBoard ] = useState( [] )
     const [ turn, setTurn ] = useState( '' )
     const [ myColor, setMyColor ] = useState( '' )
@@ -75,13 +94,32 @@ const ChessProvider = ( props ) => {
     const [ name, setName ] = useState( "Player" )
     const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
     const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
-    const [ connectionID, setConnectionID ] = useState( "" )
     const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
     const [ status, setStatus ] = useState( "" )
     const [ loginError, setLoginError ] = useState( false )
+    const [ loginErrorMsg, setLoginErrorMsg ] = useState( "" )
     const [ joinError, setJoinError ] = useState( false )
+    const [ otherConnect, setOtherConnect ] = useState( false )
 
+    // jump msg
+    const [ messageApi, contextHolder ] = message.useMessage()
 
+    const registerSuccess = () => {
+        messageApi.open( {
+            type: "success",
+            content: "Register Successed."
+        } )
+    }
+
+    // back to login
+    const backToLogin = () => {
+        setName( "Player" )
+        setOpponentName()
+        setRoomNumber( "Waiting for Opponent" )
+        setHasLogin( false )
+        setHasStarted( false )
+        setOtherConnect( false )
+    }
 
     // sending
     const preview = ( previewPos ) => {
@@ -99,6 +137,11 @@ const ChessProvider = ( props ) => {
         sendData( [ "login", [ name, password ] ] )
     }
 
+    const register = ( name, password ) => {
+        // register
+        sendData( [ "register", [ name, password ] ] )
+    }
+
     const init = () => {
         // get initial board 
         sendData( [ 'init' ] )
@@ -106,12 +149,12 @@ const ChessProvider = ( props ) => {
 
     const createRoom = () => {
         // first person create a game room
-        sendData( [ "createRoom", name ] )
+        sendData( [ "createRoom" ] )
     }
 
-    const joinRoom = ( roomNumber, name ) => {
+    const joinRoom = ( roomNumber ) => {
         // second person join a room
-        sendData( [ "joinRoom", [ roomNumber, name ] ] )
+        sendData( [ "joinRoom", roomNumber ] )
     }
 
 
@@ -121,11 +164,6 @@ const ChessProvider = ( props ) => {
         const [ task, response ] = JSON.parse( data )
         switch ( task ) {
 
-            case "connectionID": {
-                const ID = response
-                break
-            }
-
             case "rp_login": {
                 console.log( response )
                 const [ type, user ] = response
@@ -133,7 +171,20 @@ const ChessProvider = ( props ) => {
                     setName( user )
                     setHasLogin( true )
                 } else {
+                    setLoginErrorMsg( type )
                     setLoginError( true )
+                }
+                break
+            }
+
+            case "rp_register": {
+                const msg = response
+                if ( msg === "Success" ) {
+                    setRegisterFail( false )
+                    registerSuccess()
+                } else {
+                    setRegisterFail( true )
+                    setRegisterFailMsg( msg )
                 }
                 break
             }
@@ -167,6 +218,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "gameStarted": {
+                console.log( "GS" )
                 const [ newGame, opName ] = response
                 setWaitingForOpponent( false )
                 setBoard( newGame.board )
@@ -190,6 +242,11 @@ const ChessProvider = ( props ) => {
                 setTurn( game.turn )
                 console.log( game.status )
                 setStatus( game.status )
+                break
+            }
+
+            case "Logged in from other place": {
+                setOtherConnect( true )
                 break
             }
         }
@@ -233,60 +290,77 @@ const ChessProvider = ( props ) => {
     }
 
     return (
-        <ChessContext.Provider
-            value={
-                {
-                    hasLogin,
-                    setHasLogin,
+        <>
+            {contextHolder}
+            < ChessContext.Provider
+                value={
+                    {
+                        hasLogin,
+                        setHasLogin,
 
-                    hasStarted,
-                    setHasStarted,
+                        hasStarted,
+                        setHasStarted,
 
-                    board,
-                    setBoard,
+                        registerFail,
+                        setRegisterFail,
 
-                    turn,
-                    setTurn,
+                        registerFailMsg,
+                        setRegisterFailMsg,
 
-                    myColor,
-                    setMyColor,
+                        board,
+                        setBoard,
 
-                    focusP,
-                    setFocusP,
+                        turn,
+                        setTurn,
 
-                    winner,
-                    setWinner,
+                        myColor,
+                        setMyColor,
 
-                    name,
-                    setName,
+                        focusP,
+                        setFocusP,
 
-                    opponentName,
-                    setOpponentName,
+                        winner,
+                        setWinner,
 
-                    roomNumber,
-                    setRoomNumber,
+                        name,
+                        setName,
 
-                    status,
-                    setStatus,
+                        opponentName,
+                        setOpponentName,
 
-                    waitingForOpponent,
-                    setWaitingForOpponent,
+                        roomNumber,
+                        setRoomNumber,
 
-                    loginError,
-                    setLoginError,
+                        status,
+                        setStatus,
 
-                    joinError,
-                    setJoinError,
+                        waitingForOpponent,
+                        setWaitingForOpponent,
 
-                    preview,
-                    move,
-                    login,
-                    createRoom,
-                    joinRoom,
+                        loginError,
+                        setLoginError,
+
+                        loginErrorMsg,
+                        setLoginErrorMsg,
+
+                        joinError,
+                        setJoinError,
+
+                        otherConnect,
+                        setOtherConnect,
+
+                        preview,
+                        move,
+                        login,
+                        register,
+                        createRoom,
+                        joinRoom,
+                        backToLogin,
+                    }
                 }
-            }
-            {...props}
-        />
+                {...props}
+            />
+        </>
     )
 }
 

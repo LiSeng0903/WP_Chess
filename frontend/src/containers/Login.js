@@ -1,6 +1,7 @@
 import styled from "styled-components"
 import Enter from "../components/Enter"
 import { useChess } from "./hooks/useChess"
+import RegisterModal from "../components/RegisterModal"
 
 const LoginWrapper = styled.div`
     height: 100%;
@@ -26,15 +27,16 @@ const Title = styled.div`
 `
 
 const Login = () => {
-    const { loginError, setLoginError } = useChess()
+    const { loginErrorMsg, loginError, setLoginError } = useChess()
 
     return (
         <LoginWrapper>
             <Title style={{ fontFamily: "Comic Sans MS" }}>Login</Title>
-            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>Please Enter a Valid User Name or Correct Password.</p>
+            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>{loginErrorMsg}</p>
             <Enter
                 setLoginError={setLoginError}
             />
+            <RegisterModal />
         </LoginWrapper>
     )
 }
