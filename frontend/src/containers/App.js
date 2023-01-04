@@ -2,6 +2,7 @@ import styled from "styled-components"
 
 import { Board } from "./Board"
 import { useChess } from "./hooks/useChess"
+import Join from "./Join"
 import Login from "./Login"
 
 const AppWrapper = styled.div`
@@ -13,11 +14,11 @@ const AppWrapper = styled.div`
 `
 
 function App() {
-  const { hasStarted, setHasStarted } = useChess()
+  const { hasLogin, setHasLogin, hasStarted, setHasStarted } = useChess()
 
   return (
     <AppWrapper className="App" style={{ display: 'flex' }}>
-      {!hasStarted ? <Login /> : <Board />}
+      {!hasLogin ? <Login /> : !hasStarted ? <Join /> : <Board />}
     </AppWrapper>
   )
 }
