@@ -48,9 +48,6 @@ const ChessContext = createContext(
         roomNumber: "", //play room number (string)
         setRoomNumber: () => {},
 
-        connectionID: "",
-        setConnectionID: () => {},
-
         status: "",
         setStatus: () => {},
 
@@ -66,12 +63,16 @@ const ChessContext = createContext(
         joinError: Boolean,
         setJoinError: () => {},
 
+        otherConnect: Boolean,
+        setOtherConnect: () => {},
+
         preview: () => {},
         move: () => {},
         login: () => {},
         register: () => {},
         createRoom: () => {},
         joinRoom: () => {},
+        backToLogin: () => {},
 
         messageApi: {},
         contextHolder: {},
@@ -93,12 +94,12 @@ const ChessProvider = ( props ) => {
     const [ name, setName ] = useState( "Player" )
     const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
     const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
-    const [ connectionID, setConnectionID ] = useState( "" )
     const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
     const [ status, setStatus ] = useState( "" )
     const [ loginError, setLoginError ] = useState( false )
     const [ loginErrorMsg, setLoginErrorMsg ] = useState( "" )
     const [ joinError, setJoinError ] = useState( false )
+    const [ otherConnect, setOtherConnect ] = useState( false )
 
     // jump msg
     const [ messageApi, contextHolder ] = message.useMessage()
@@ -108,6 +109,16 @@ const ChessProvider = ( props ) => {
             type: "success",
             content: "Register Successed."
         } )
+    }
+
+    // back to login
+    const backToLogin = () => {
+        setName( "Player" )
+        setOpponentName()
+        setRoomNumber( "Waiting for Opponent" )
+        setHasLogin( false )
+        setHasStarted( false )
+        setOtherConnect( false )
     }
 
     // sending
@@ -152,11 +163,6 @@ const ChessProvider = ( props ) => {
         const { data } = byteString
         const [ task, response ] = JSON.parse( data )
         switch ( task ) {
-
-            case "connectionID": {
-                const ID = response
-                break
-            }
 
             case "rp_login": {
                 console.log( response )
@@ -240,6 +246,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "Logged in from other place": {
+                setOtherConnect( true )
                 break
             }
         }
@@ -339,12 +346,16 @@ const ChessProvider = ( props ) => {
                         joinError,
                         setJoinError,
 
+                        otherConnect,
+                        setOtherConnect,
+
                         preview,
                         move,
                         login,
                         register,
                         createRoom,
                         joinRoom,
+                        backToLogin,
                     }
                 }
                 {...props}
