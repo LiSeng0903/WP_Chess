@@ -49,7 +49,8 @@ const RegisterModal = () => {
             <TextStyle type="primary" onClick={showModal}>
                 Register
             </TextStyle>
-            <Modal title="Register a player" open={isModalOpen || registerFail} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Register a player" open={isModalOpen || registerFail} onOk={handleOk} onCancel={handleCancel} 
+            okButtonProps={{ style: { backgroundColor:"brown" } }}>
                 <Form
                     name="basic"
                     initialValues={{
