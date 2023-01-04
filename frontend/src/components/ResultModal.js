@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { useChess } from "../containers/hooks/useChess"
+import { Button } from 'antd'
 
 const ResultModalWrapper = styled.div`
     height: 100px;
