@@ -18,6 +18,9 @@ const boardcastDataToGame = ( gameID, data, games, connections ) => {
     sendData( data, bWS )
 }
 
+// constant 
+const SALT_ROUND = 10
+
 export default {
     onMessage: ( clientWS, connectionID, games, connections ) => {
         return ( ( async ( byteString ) => {
@@ -29,7 +32,7 @@ export default {
                     let [name, password] = payload
                     let replyMsg = ''
 
-                    const player = new Player( { name: name, password: bcrypt.hashSync( password, 20 ) } )
+                    const player = new Player( { name: name, password: bcrypt.hashSync( password, 10 ) } )
                     try {
                         await player.save()
                         console.log( 'Register success' )
@@ -48,8 +51,6 @@ export default {
                     let player = await Player.findOne( { name: name } )
 
                     let replyMsg = ''
-                    console.log( player )
-                    console.log( bcrypt.compareSync( password, player.password ) )
                     if ( bcrypt.compareSync( password, player.password ) ) {
                         replyMsg = 'Success'
                     }
