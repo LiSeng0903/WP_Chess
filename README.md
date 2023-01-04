@@ -21,4 +21,4 @@
 圖片來源：
 - Login、Jion 背景：https://pixabay.com/photos/chess-chessboard-board-game-3960184/
 - 棋盤背景：https://pixabay.com/photos/floor-wood-hardwood-floors-1256804/
-- 下棋背景：https://pixabay.com/photos/old-paper-pen-wood-nature-antique-3620022/
+- 下棋背景：https://pixabay.com/photos/marble-background-backdrop-1006628/
