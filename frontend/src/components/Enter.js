@@ -2,6 +2,25 @@ import { Button, Checkbox, Form, Input } from 'antd'
 import { UserOutlined } from "@ant-design/icons"
 import { useChess } from "../containers/hooks/useChess"
 import { useState } from "react"
+import styled from "styled-components"
+
+const FormStyle = styled(Form)`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
+
+const ButtonStyle = styled(Button)`
+    background-color: brown;
+    width: 200px;
+    opacity: .5;
+    
+    &:hover{
+        background-color: brown !important;
+        opacity: 1;
+    }
+`
 
 const Enter = ( { setLoginError } ) => {
     const { login } = useChess()
@@ -15,7 +34,7 @@ const Enter = ( { setLoginError } ) => {
     }
 
     return (
-        <Form
+        <FormStyle 
             name="basic"
             labelCol={{
                 span: 10,
@@ -28,8 +47,9 @@ const Enter = ( { setLoginError } ) => {
             autoComplete="off"
         >
             <Form.Item
-                label="User Name"
+                label={<p style={{color:"white"}}>User Name :</p>}
                 name="userName"
+                colon={false}
                 rules={[
                     {
                         required: true,
@@ -41,8 +61,9 @@ const Enter = ( { setLoginError } ) => {
             </Form.Item>
 
             <Form.Item
-                label="Password"
+                label={<p style={{color:"white"}}>Password :</p>}
                 name="password"
+                colon={false}
                 rules={[
                     {
                         required: true,
@@ -52,18 +73,11 @@ const Enter = ( { setLoginError } ) => {
             >
                 <Input.Password />
             </Form.Item>
+            <ButtonStyle type="primary" htmlType="submit">
+                Login
+            </ButtonStyle>
 
-            <Form.Item
-                wrapperCol={{
-                    offset: 9,
-                    span: 16,
-                }}
-            >
-                <Button type="primary" htmlType="submit">
-                    Login
-                </Button>
-            </Form.Item>
-        </Form>
+        </FormStyle>
     )
 }
 

@@ -17,3 +17,6 @@
 ## 如果此專題是之前作品/專題的延伸，請務必在此說明清楚 (本學期的貢獻)
 
 ## 使用第三方套件
+
+圖片來源：
+- Login 背景：https://pixabay.com/photos/chess-chessboard-board-game-3960184/
