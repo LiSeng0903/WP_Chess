@@ -7,9 +7,12 @@ import { uuid } from 'uuidv4'
 import mongoose from "mongoose"
 import mongo from './mongo.js'
 import { Player } from "../models/Player.js"
+import bcrypt from 'bcryptjs'
 
 // Constant 
-const SERVER_IP = 'localhost'
+// const SERVER_IP = 'localhost'
+const SERVER_IP = '192.168.0.144'
+const INIT = true
 
 //mongoose connection
 mongoose.set( 'strictQuery', false )
@@ -27,7 +30,7 @@ let connections = [] // list of connection info, index is connection ID; { ws:..
 
 db.once( 'open', () => {
     console.log( 'db connected' )
-    init_test_player()
+    if ( INIT ) init_test_player()
 
     serverWS.on( "connection", ( clientWS ) => {
         // store connection 
@@ -51,6 +54,12 @@ server.listen( PORT, SERVER_IP, () => {
 const init_test_player = async () => {
     const testName = 'Ali'
     const testPassword = '11111111'
+    const hash_1 = bcrypt.hashSync( testPassword, 12 )
+
+    let temp = bcrypt.compareSync( '11211111', hash_1 )
+    console.log( hash_1 )
+    console.log( temp )
+
     const testPlayer = new Player( { name: testName, password: testPassword } )
     try {
         await testPlayer.save()

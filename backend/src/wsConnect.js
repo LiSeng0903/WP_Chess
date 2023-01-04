@@ -1,5 +1,6 @@
 // import 
 import { Game } from "./Game.js"
+import { Player } from '../models/Player.js'
 
 // functions 
 const sendData = ( data, clientWS ) => {
@@ -23,6 +24,21 @@ export default {
             const [task, payload] = JSON.parse( data )
 
             switch ( task ) {
+                case "login": {
+                    let [name, password] = payload
+                    let player = await Player.findOne( { name: name } )
+
+                    let replyMsg = ''
+                    if ( player.password == password ) {
+                        replyMsg = 'login success'
+                    }
+                    else {
+                        replyMsg = 'login failed'
+                    }
+                    console.log( 'login' )
+                    sendData( ['rp_login', replyMsg], clientWS )
+                    break
+                }
                 case "createRoom": {
                     // get info
                     let name = payload
