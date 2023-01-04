@@ -1,7 +1,17 @@
 import { useState } from "react"
 import { Button, Modal, Form, Input } from 'antd'
 import { useChess } from "../containers/hooks/useChess"
+import styled from "styled-components"
 
+
+const TextStyle = styled.p`
+    text-decoration: underline;
+    &:hover{
+        cursor: pointer; 
+        color:brown;
+        text-decoration: underline;
+    }
+`
 const RegisterModal = () => {
     const { register, registerFailMsg, registerFail, setRegisterFail } = useChess()
     const [ isModalOpen, setIsModalOpen ] = useState( false )
@@ -36,9 +46,9 @@ const RegisterModal = () => {
 
     return (
         <>
-            <Button type="primary" onClick={showModal}>
+            <TextStyle type="primary" onClick={showModal}>
                 Register
-            </Button>
+            </TextStyle>
             <Modal title="Register a player" open={isModalOpen || registerFail} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     name="basic"

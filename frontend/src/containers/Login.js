@@ -2,42 +2,72 @@ import styled from "styled-components"
 import Enter from "../components/Enter"
 import { useChess } from "./hooks/useChess"
 import RegisterModal from "../components/RegisterModal"
+import chessIMG from "../imgs/chess.jpg"
 
-const LoginWrapper = styled.div`
-    height: 100%;
-    width: 600px;
-    background-color: #0c531c;
+const FullLoginWrapper = styled.div`
+    height:100%;
+    width:100%;
+    background-image: url(${chessIMG});
+    background-size: 1450px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 `
 
+const LoginWrapper = styled.div`
+    height: 50%;
+    width: 400px;
+    background-color: rgba(0,0,0,0.6) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 20px;
+`
+
 const Title = styled.div`
-    background-color: #25803b;
-    height: 300px;
-    width: 600px;
+    height: 50px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-family:cursive;
-    font-style: oblique;
-    font-size: 80px
+    font-size: 20px;
+    color: white;
+`
+const FooterStyle = styled.div`
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: break-spaces;
+`
+
+const HeaderStyle = styled.div`
+   
 `
 
 const Login = () => {
     const { loginErrorMsg, loginError, setLoginError } = useChess()
 
     return (
-        <LoginWrapper>
-            <Title style={{ fontFamily: "Comic Sans MS" }}>Login</Title>
-            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>{loginErrorMsg}</p>
-            <Enter
-                setLoginError={setLoginError}
-            />
-            <RegisterModal />
-        </LoginWrapper>
+        <FullLoginWrapper>
+            <LoginWrapper>
+                <HeaderStyle></HeaderStyle>
+                <div>
+                    <Title style={{ fontFamily: "Comic Sans MS" }}>Login to Chess</ Title>
+                    <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>{loginErrorMsg}</p>
+                    <Enter
+                        setLoginError={setLoginError}
+                    />
+                </div>
+                <FooterStyle>
+                    <p>Don't have an account?  </p>
+                    <RegisterModal />
+                </FooterStyle>
+            </LoginWrapper>
+        </FullLoginWrapper>
     )
 }
 
