@@ -39,6 +39,9 @@ const ChessContext = createContext(
         winner: "",
         setWinner: () => {},
 
+        endGame: Boolean,
+        setEndGame: () => {},
+
         name: "", //player name
         setName: () => {},
 
@@ -92,6 +95,7 @@ const ChessProvider = ( props ) => {
     const [ myColor, setMyColor ] = useState( '' )
     const [ focusP, setFocusP ] = useState( [] )
     const [ winner, setWinner ] = useState( "" )
+    const [ endGame, setEndGame ] = useState( false )
     const [ name, setName ] = useState( "Player" )
     const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
     const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
@@ -127,6 +131,7 @@ const ChessProvider = ( props ) => {
         setName( "Player" )
         setOpponentName( "Waiting for Opponent" )
         setRoomNumber( "Welcome!" )
+        setEndGame( false )
         setWaitingForOpponent( true )
         setHasLogin( false )
         setHasStarted( false )
@@ -146,6 +151,7 @@ const ChessProvider = ( props ) => {
 
         setOpponentName( "Waiting for Opponent" )
         setRoomNumber( "Welcome!" )
+        setEndGame( false )
         setWaitingForOpponent( true )
         setHasStarted( false )
         setOtherConnect( false )
@@ -270,12 +276,12 @@ const ChessProvider = ( props ) => {
                 setTurn( game.turn )
                 setStatus( game.status )
                 if ( game.status === "checkmate" ) {
-                    // if ( game.turn === "w" ) {
-                    //     setWinner( "b" )
-                    // } else {
-                    //     setWinner( "w" )
-                    //     console.log( winner === "" )
-                    // }
+                    if ( game.turn === "w" ) {
+                        setWinner( "b" )
+                    } else {
+                        setWinner( "w" )
+                    }
+                    setEndGame( true )
                 }
                 break
             }
@@ -369,6 +375,9 @@ const ChessProvider = ( props ) => {
 
                         winner,
                         setWinner,
+
+                        endGame,
+                        setEndGame,
 
                         name,
                         setName,

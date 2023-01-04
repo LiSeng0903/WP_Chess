@@ -49,6 +49,12 @@ const HeaderStyle = styled.div`
    
 `
 
+const MsgStyle = styled.p`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+
 const Login = () => {
     const { loginErrorMsg, loginError, setLoginError } = useChess()
 
@@ -58,7 +64,7 @@ const Login = () => {
                 <HeaderStyle></HeaderStyle>
                 <div>
                     <Title style={{ fontFamily: "Comic Sans MS" }}>Login to Chess</ Title>
-                    <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>{loginErrorMsg}</p>
+                    <MsgStyle style={{ opacity: loginError ? "1" : "0", color: "red" }}>{loginErrorMsg}</MsgStyle>
                     <Enter
                         setLoginError={setLoginError}
                     />
