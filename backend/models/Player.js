@@ -5,7 +5,8 @@ const Schema = mongoose.Schema
 const PlayerSchema = new Schema( {
     name: {
         type: String,
-        required: [true, 'Name field is missed']
+        required: [true, 'Name field is missed'],
+        unique: [true, 'Name is used']
     },
     password: {
         type: String,
