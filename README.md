@@ -1,14 +1,19 @@
-# 執行方式
-前端以 React 實作；後端則是 JavaScript 在 node.js 中執行，要先確定電腦有可以的環境。
+# 網服 期末專題報告
 
-另外後端使用的 port 為 4000；前端使用的 port 為 3000，請確保這些 port 上沒有程式運行。
+## 服務基本資訊
++ 組別：12 
++ 組長中文姓名：張力升
++ 題目名稱：西洋棋連線對戰遊戲 （原本為棒球紀錄系統，後來改變題目）
++ Deployed service 網址：
++ Github Repo 網址：
++ Demo 影片網址：
++ FB 社團貼文網址：
++ ( optional)其他想提醒老師與助教評分之事項：
 
-## Server 程式
-需到 `NWA-CHESS/backend/src/server.js` 中修改 `SERVER_IP`，改成要跑 server 的電腦的 ip。
+## localhost 安裝與測試之詳細步驟
 
-接下來在 `NWA-CHESS` 目錄下執行 `yarn backend`，待跑出 `port on 4000` 即可
+## 每位組員之負責項目
 
-## Client 程式
-需到 `NWA-CHESS/frontend/src/containers/hook/useChess.js` 中修改 `SERVER_IP`，改成要跑 server 的電腦的 ip。
+## 如果此專題是之前作品/專題的延伸，請務必在此說明清楚 (本學期的貢獻)
 
-接下來在 `NWA-CHESS` 目錄下執行 `yarn frontend`，出現網頁畫面（網址是 http://localhost:3000）即可，連上線時後端也會印出 `player connected`的訊息。
+## 使用第三方套件
