@@ -1,6 +1,6 @@
 import { uuid } from "uuidv4"
 
-const DEBUG = true
+const DEBUG = false
 const BOARD_LEN = 8
 
 class Game {
@@ -411,15 +411,35 @@ class Game {
             }
         }
         this.update_preview_list( 'w' )
+
+        // special rules 
+        this.special_rule = {
+            'castling': {
+                'w': {
+                    'long': true,
+                    'short': true
+                },
+                'b': {
+                    'long': true,
+                    'short': true
+                }
+            }
+        }
     }
 
     move( from, to ) {
         // clean board 
         this.clean_ava()
 
+
+        // TODO: whether is pass 
+
         // move 
         let [fromX, fromY] = from
         let [toX, toY] = to
+        let toMovePieceType = Game.get_info( from, this.board ).type
+
+        // TODO: Whether is castling 
         if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
             let piece = this.board[fromX][fromY]
             this.board[fromX][fromY] = {
@@ -433,6 +453,24 @@ class Game {
             // cannot move
             return
         }
+
+        // Check castling condition
+        if ( toMovePieceType == 'king' ) {
+            this.special_rule['castling'][this.turn]['long'] = false
+            this.special_rule['castling'][this.turn]['short'] = false
+        }
+        // Long  
+        else if ( ( toMovePieceType == 'rook' ) && ( fromY == 0 ) ) {
+            this.special_rule['castling'][this.turn]['long'] = false
+        }
+        // short 
+        else if ( ( toMovePieceType == 'rook' ) && ( fromY == 7 ) ) {
+            this.special_rule['castling'][this.turn]['short'] = false
+        }
+
+        console.log( this.special_rule['castling'] )
+
+        // TODO: check pass condition 
         this.check_pawn_transform()
         this.switch_turn()
     }
