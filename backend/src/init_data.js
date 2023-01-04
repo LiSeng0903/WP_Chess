@@ -1,4 +1,7 @@
+// import 
 import bcrypt from 'bcryptjs'
+
+import { Player } from "../models/Player.js"
 
 const init_test_player = async () => {
     await Player.remove( {} )

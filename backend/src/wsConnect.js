@@ -30,53 +30,58 @@ export default {
 
             switch ( task ) {
                 case "register": {
-                    let [name, password] = payload
-                    let replyMsg = ''
+                    let [playerID, password] = payload
 
-                    const player = new Player( { name: name, password: bcrypt.hashSync( password, SALT_ROUND ) } )
+                    const player = new Player( { name: playerID, password: bcrypt.hashSync( password, SALT_ROUND ) } )
                     try {
                         await player.save()
-                        console.log( 'Register success' )
-                        replyMsg = 'register success'
+                        sendData( ['rp_register', 'Success'], clientWS )
+                        console.log( `Register success: ${playerID}` )
                     }
                     catch ( error ) {
                         // throw new Error( 'Message DB save error' + error )
-                        replyMsg = 'register failed'
+                        sendData( ['rp_register', `Failed: Player ID is used`], clientWS )
+                        console.log( `Register failed` )
+                        break
                     }
-
-                    sendData( ['rp_register', replyMsg], clientWS )
                     break
                 }
+
                 case "login": {
+                    // Get information 
                     let [playerID, password] = payload
                     let player = await Player.findOne( { name: playerID } )
+                    if ( !player ) {
+                        sendData( ['rp_login', ['Failed: Player haven\'t registered.', playerID]], clientWS )
+                        break
+                    }
 
                     let replyMsg = ''
-                    if ( bcrypt.compareSync( password, player.password ) ) {
-                        replyMsg = 'Success'
-
-                        // set connections 
-                        connections[connectionID] = {
-                            playerID: playerID
-                        }
-
-                        // store connection info 
-                        playerConnections[playerID] = {
-                            ws: clientWS,
-                            gameID: ''
-                        }
+                    if ( bcrypt.compareSync( password, player.password ) == false ) {
+                        sendData( ['rp_login', ['Failed: Wrong password.', playerID]], clientWS )
+                        break
                     }
-                    else {
-                        replyMsg = 'Failed'
+                    replyMsg = 'Success'
+
+                    // set connections 
+                    connections[connectionID] = {
+                        playerID: playerID
                     }
 
-                    sendData( ['rp_login', [replyMsg, playerID]], clientWS )
+                    // store connection info 
+                    playerConnections[playerID] = {
+                        ws: clientWS,
+                        gameID: ''
+                    }
+
+                    sendData( ['rp_login', ['Success', playerID]], clientWS )
+
+
+
                     break
                 }
                 case "createRoom": {
                     // get info
-                    // ! remove payload 
-                    // let name = payload
                     let playerID = connections[connectionID].playerID
 
                     // create game 
@@ -96,8 +101,7 @@ export default {
                 }
                 case "joinRoom": {
                     // get info
-                    // TODO: remove payload 
-                    let [gameID, name] = payload
+                    let gameID = payload
                     let playerID = connections[connectionID].playerID
 
                     // Game not exist 
@@ -117,12 +121,8 @@ export default {
                         // send start msg to both players 
                         // payload: [game, opponentName ]
 
-
                         let wWS = playerConnections[game.wID].ws
                         let bWS = playerConnections[game.bID].ws
-
-                        console.log( bWS )
-                        console.log( wWS )
 
                         sendData( ['gameStarted', [game, game.bID]], wWS )
                         sendData( ['gameStarted', [game, game.wID]], bWS )
