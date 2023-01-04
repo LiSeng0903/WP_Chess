@@ -438,17 +438,38 @@ class Game {
         // move 
         let [fromX, fromY] = from
         let [toX, toY] = to
-        let toMovePieceType = Game.get_info( from, this.board ).type
+        let piece = this.board[fromX][fromY]
 
         // TODO: Whether is castling 
         if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
-            let piece = this.board[fromX][fromY]
+
             this.board[fromX][fromY] = {
                 type: 'nothing',
                 color: 'nothing',
                 ava: false
             }
             this.board[toX][toY] = piece
+
+            // Castling 
+            if ( ( piece.type == 'king' ) && ( Math.abs( toY - fromY ) == 2 ) ) {
+                // Long 
+                if ( toY == 2 ) {
+                    this.board[fromX][3].type = 'rook'
+                    this.board[fromX][3].color = piece.color
+
+                    this.board[fromX][0].type = 'nothing'
+                    this.board[fromX][0].color = 'nothing'
+                }
+                // Short
+                else if ( toY == 6 ) {
+                    this.board[fromX][5].type = 'rook'
+                    this.board[fromX][5].color = piece.color
+
+                    this.board[fromX][7].type = 'nothing'
+                    this.board[fromX][7].color = 'nothing'
+                }
+            }
+
         }
         else {
             // cannot move
@@ -456,16 +477,16 @@ class Game {
         }
 
         // Check castling condition
-        if ( toMovePieceType == 'king' ) {
+        if ( piece.type == 'king' ) {
             this.special_rule['castling'][this.turn]['long'] = false
             this.special_rule['castling'][this.turn]['short'] = false
         }
         // Long  
-        else if ( ( toMovePieceType == 'rook' ) && ( fromY == 0 ) ) {
+        else if ( ( piece.type == 'rook' ) && ( fromY == 0 ) ) {
             this.special_rule['castling'][this.turn]['long'] = false
         }
         // short 
-        else if ( ( toMovePieceType == 'rook' ) && ( fromY == 7 ) ) {
+        else if ( ( piece.type == 'rook' ) && ( fromY == 7 ) ) {
             this.special_rule['castling'][this.turn]['short'] = false
         }
 
