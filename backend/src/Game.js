@@ -398,6 +398,20 @@ class Game {
         this.wID = ''
         this.bID = ''
 
+        // special rules 
+        this.special_rule = {
+            'castling': {
+                'w': {
+                    'long': true,
+                    'short': true
+                },
+                'b': {
+                    'long': true,
+                    'short': true
+                }
+            }
+        }
+
         // game status 
         this.playerCnt = 0
         this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
@@ -412,19 +426,6 @@ class Game {
         }
         this.update_preview_list( 'w' )
 
-        // special rules 
-        this.special_rule = {
-            'castling': {
-                'w': {
-                    'long': true,
-                    'short': true
-                },
-                'b': {
-                    'long': true,
-                    'short': true
-                }
-            }
-        }
     }
 
     move( from, to ) {
@@ -468,11 +469,9 @@ class Game {
             this.special_rule['castling'][this.turn]['short'] = false
         }
 
-        console.log( this.special_rule['castling'] )
-
         // TODO: check pass condition 
         this.check_pawn_transform()
-        this.switch_turn()
+        this.switch_turn_and_update()
     }
 
     preview( prePos ) {
@@ -485,7 +484,6 @@ class Game {
 
         // Preview position
         let [preX, preY] = prePos
-        let pieceType = this.board[preX][preY].type
         if ( this.board[preX][preY].color != this.turn ) {
             return this.board
         }
@@ -498,7 +496,7 @@ class Game {
         }
     }
 
-    switch_turn() {
+    switch_turn_and_update() {
         this.turn = Game.op_clr( this.turn )
 
         this.update_preview_list()
@@ -555,6 +553,7 @@ class Game {
     }
 
     update_preview_list() {
+        // General step 
         for ( let x = 0; x < BOARD_LEN; x++ ) {
             for ( let y = 0; y < BOARD_LEN; y++ ) {
                 // only check grid with current color 
@@ -585,6 +584,53 @@ class Game {
                 } )
 
                 this.previewList[x][y] = avaList
+            }
+        }
+
+        // Castling 
+        if ( this.special_rule['castling'][this.turn]['long'] == true ) {
+            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+            let x = ( this.turn == 'w' ? 7 : 0 )
+
+            if ( trialBoard[x][1].type == 'nothing' &&
+                trialBoard[x][2].type == 'nothing' &&
+                trialBoard[x][3].type == 'nothing' ) {
+
+                trialBoard[x][2].type = 'king'
+                trialBoard[x][2].color = this.turn
+                trialBoard[x][3].type = 'rook'
+                trialBoard[x][3].color = this.turn
+
+                trialBoard[x][0].type = 'nothing'
+                trialBoard[x][0].color = 'nothing'
+                trialBoard[x][4].type = 'nothing'
+                trialBoard[x][4].color = 'nothing'
+
+                if ( Game.is_check( trialBoard, this.turn ) == false ) {
+                    this.previewList[x][4].push( [x, 2] )
+                }
+            }
+        }
+        if ( this.special_rule['castling'][this.turn]['short'] == true ) {
+            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+            let x = ( this.turn == 'w' ? 7 : 0 )
+
+            if ( trialBoard[x][5].type == 'nothing' &&
+                trialBoard[x][6].type == 'nothing' ) {
+
+                trialBoard[x][6].type = 'king'
+                trialBoard[x][6].color = this.turn
+                trialBoard[x][5].type = 'rook'
+                trialBoard[x][5].color = this.turn
+
+                trialBoard[x][7].type = 'nothing'
+                trialBoard[x][7].color = 'nothing'
+                trialBoard[x][4].type = 'nothing'
+                trialBoard[x][4].color = 'nothing'
+
+                if ( Game.is_check( trialBoard, this.turn ) == false ) {
+                    this.previewList[x][4].push( [x, 6] )
+                }
             }
         }
     }
