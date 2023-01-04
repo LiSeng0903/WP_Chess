@@ -58,46 +58,46 @@ const ChessContext = createContext(
 
 
 const ChessProvider = ( props ) => {
-    const [ hasStarted, setHasStarted ] = useState( false )
-    const [ board, setBoard ] = useState( [] )
-    const [ turn, setTurn ] = useState( '' )
-    const [ myColor, setMyColor ] = useState( '' )
-    const [ focusP, setFocusP ] = useState( [] )
-    const [ winner, setWinner ] = useState( '' )
-    const [ name, setName ] = useState( "Player" )
-    const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
-    const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
-    const [ connectionID, setConnectionID ] = useState( "" )
-    const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
-    const [ status, setStatus ] = useState( "" )
-    const [ loginError, setLoginError ] = useState( false )
+    const [hasStarted, setHasStarted] = useState( false )
+    const [board, setBoard] = useState( [] )
+    const [turn, setTurn] = useState( '' )
+    const [myColor, setMyColor] = useState( '' )
+    const [focusP, setFocusP] = useState( [] )
+    const [winner, setWinner] = useState( '' )
+    const [name, setName] = useState( "Player" )
+    const [opponentName, setOpponentName] = useState( "Waiting for Opponent" )
+    const [roomNumber, setRoomNumber] = useState( "Welcome!" )
+    const [connectionID, setConnectionID] = useState( "" )
+    const [waitingForOpponent, setWaitingForOpponent] = useState( true )
+    const [status, setStatus] = useState( "" )
+    const [loginError, setLoginError] = useState( false )
 
 
 
     // sending
     const preview = ( previewPos ) => {
         // get preview board 
-        sendData( [ "preview", previewPos ] )
+        sendData( ["preview", previewPos] )
     }
 
     const move = ( from, to ) => {
         // get moved board 
-        sendData( [ "move", { from, to } ] )
+        sendData( ["move", { from, to }] )
     }
 
     const init = () => {
         // get initial board 
-        sendData( [ 'init' ] )
+        sendData( ['init'] )
     }
 
     const createRoom = ( name ) => {
         // first person create a game room
-        sendData( [ "createRoom", name ] )
+        sendData( ["createRoom", name] )
     }
 
     const joinRoom = ( roomNumber, name ) => {
         // second person join a room
-        sendData( [ "joinRoom", [ roomNumber, name ] ] )
+        sendData( ["joinRoom", [roomNumber, name]] )
     }
 
 
@@ -114,7 +114,7 @@ const ChessProvider = ( props ) => {
 
             case "createRoomSuccess": {
                 console.log( waitingForOpponent )
-                const [ game, playerColor, gameID ] = response
+                const [game, playerColor, gameID] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -125,7 +125,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "joinRoomSuccess": {
-                const [ game, playerColor, gameID ] = response
+                const [game, playerColor, gameID] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -142,7 +142,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "gameStarted": {
-                const [ newGame, opName ] = response
+                const [newGame, opName] = response
                 setWaitingForOpponent( false )
                 setBoard( newGame.board )
                 setTurn( newGame.turn )

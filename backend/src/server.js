@@ -1,26 +1,24 @@
+// Import libraries 
 import express from 'express'
 import http from 'http'
 import WebSocket from 'ws'
 import wsConnect from "./wsConnect.js"
 import { uuid } from 'uuidv4'
 
-const sendData = ( data, clientWS ) => {
-    clientWS.send( JSON.stringify( data ) )
-}
-
+// Constant 
 const SERVER_IP = 'localhost'
-// const SERVER_IP = '192.168.0.143'
 
+// Server 
 const app = express()
 const server = http.createServer( app )
 const serverWS = new WebSocket.Server( { server } )
 
-// let game = ''
-let games = []
-let connections = []
+// Store infomations 
+let games = [] // list of Game object 
+let connections = [] // list of connection info, index is connection ID; { ws:.., name:.., game:.. }
 
-// game = new Game()
 serverWS.on( "connection", ( clientWS ) => {
+
     // store connection 
     let connectionID = uuid()
     connections[ connectionID ] = {
@@ -29,13 +27,8 @@ serverWS.on( "connection", ( clientWS ) => {
         game: ''
     }
 
-    // connect & send playerID
+    clientWS.onmessage = wsConnect.onMessage( clientWS, connectionID, games, connections )
     console.log( 'player connect' )
-    sendData( [ 'connectionID', connectionID ], clientWS )
-
-    // on message 
-    clientWS.onmessage = wsConnect.onMessage( clientWS, games, connections, connectionID )
-} )
 
 const PORT = 4000
 server.listen( PORT, SERVER_IP, () => {

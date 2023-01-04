@@ -5,29 +5,26 @@ const BOARD_LEN = 8
 
 class Game {
     // Static function
-
-    static previewFunctions = {
-        'pawn': Game.pawn_preview,
-        'knight': Game.knight_preview,
-        'bishop': Game.bishop_preview,
-        'rook': Game.rook_preview,
-        'queen': Game.queen_preview,
-        'king': Game.king_preview,
-        'nothing': () => { return [] }
-    }
-
+    // init function
     static debug_init_board = () => {
         let board = Game.init_board()
 
-        board[0][4].color = 'nothing'
-        board[0][4].color = 'nothing'
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                board[x][y].type = 'nothing'
+                board[x][y].color = 'nothing'
+            }
+        }
 
-        board[3][4].color = 'b'
-        board[3][4].type = 'king'
+        board[0][4].color = 'b'
+        board[0][4].type = 'king'
 
+        board[0][0].color = 'w'
+        board[0][0].type = 'rook'
         board[2][2].color = 'w'
-        board[2][2].type = 'rook'
-
+        board[2][2].type = 'queen'
+        board[5][2].color = 'w'
+        board[5][2].type = 'king'
         return board
     }
 
@@ -72,6 +69,23 @@ class Game {
         return board
     }
 
+    // get opposite color 
+    static op_clr = ( clr ) => {
+        if ( clr == 'w' ) return 'b'
+        if ( clr == 'b' ) return 'w'
+    }
+
+    // Preview functions 
+    static previewFunctions = {
+        'pawn': Game.pawn_preview,
+        'knight': Game.knight_preview,
+        'bishop': Game.bishop_preview,
+        'rook': Game.rook_preview,
+        'queen': Game.queen_preview,
+        'king': Game.king_preview,
+        'nothing': () => { return [] }
+    }
+
     static pawn_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
@@ -80,8 +94,9 @@ class Game {
         // black
         if ( clr == 'b' ) {
             if ( preX == 7 ) {
-                return []
+                return [] // nothing to move 
             }
+
             //forward 
             let forward = 1
             if ( preX == 1 ) {
@@ -138,183 +153,74 @@ class Game {
         return avaList
     }
 
-    static king_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let clr = board[preX][preY].color
-        let avaList = []
-        for ( let x = preX - 1; x <= preX + 1; x++ ) {
-            for ( let y = preY - 1; y <= preY + 1; y++ ) {
-                if ( Game.is_in_range( [x, y] ) && board[x][y].color != clr ) {
-                    avaList.push( [x, y] )
-                }
-            }
-        }
-        return avaList
-    }
-
-    static bishop_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let clr = board[preX][preY].color
-        let avaList = []
-
-        // left up 
-        if ( Game.is_in_range( [preX - 1, preY - 1] ) ) {
-            for ( let x = preX - 1, y = preY - 1; x >= 0 && y >= 0; x--, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // left down 
-        if ( Game.is_in_range( [preX + 1, preY - 1] ) ) {
-            for ( let x = preX + 1, y = preY - 1; x <= 7 && y >= 0; x++, y-- ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right up
-        if ( Game.is_in_range( [preX - 1, preY + 1] ) ) {
-            for ( let x = preX - 1, y = preY + 1; x >= 0 && y <= 7; x--, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        // right down 
-        if ( Game.is_in_range( [preX + 1, preY + 1] ) ) {
-            for ( let x = preX + 1, y = preY + 1; x <= 7 && y <= 7; x++, y++ ) {
-                if ( board[x][y].type != 'nothing' ) {
-                    if ( board[x][y].color != clr ) {
-                        avaList.push( [x, y] )
-                    }
-                    break
-                }
-                avaList.push( [x, y] )
-            }
-        }
-
-        return avaList
-    }
-
-    static rook_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let clr = board[preX][preY].color
-        let avaList = []
-
-        // upward check 
-        if ( preX != 0 ) {
-
-            for ( let x = preX - 1; x >= 0; x-- ) {
-                if ( board[x][preY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][preY].color != clr ) {
-                        avaList.push( [x, preY] )
-                    }
-                    break
-                }
-                avaList.push( [x, preY] )
-            }
-        }
-
-        // Downward check 
-        if ( preX != 7 ) {
-            for ( let x = preX + 1; x <= 7; x++ ) {
-                if ( board[x][preY].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[x][preY].color != clr ) {
-                        avaList.push( [x, preY] )
-                    }
-                    break
-                }
-                avaList.push( [x, preY] )
-            }
-        }
-
-        // Left 
-        if ( preY != 0 ) {
-            for ( let y = preY - 1; y >= 0; y-- ) {
-                if ( board[preX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[preX][y].color != clr ) {
-                        avaList.push( [preX, y] )
-                    }
-                    break
-                }
-                avaList.push( [preX, y] )
-            }
-        }
-
-        // Right 
-        if ( preY != 7 ) {
-            for ( let y = preY + 1; y <= 7; y++ ) {
-                if ( board[preX][y].type != 'nothing' ) {
-                    // different clr 
-                    if ( board[preX][y].color != clr ) {
-                        avaList.push( [preX, y] )
-                    }
-                    break
-                }
-                avaList.push( [preX, y] )
-            }
-        }
-
-        return avaList
-    }
-
-    static queen_preview( prePos, board ) {
-        let [preX, preY] = prePos
-        let avaList = Game.bishop_preview( prePos, board )
-        avaList = avaList.concat( Game.rook_preview( prePos, board ) )
-
-        return avaList
-    }
-
     static knight_preview( prePos, board ) {
         let [preX, preY] = prePos
         let clr = board[preX][preY].color
-        let avaList = []
-
-        avaList.push( [preX - 1, preY - 2] )
-        avaList.push( [preX - 2, preY - 1] )
-        avaList.push( [preX - 2, preY + 1] )
-        avaList.push( [preX - 1, preY + 2] )
-        avaList.push( [preX + 1, preY - 2] )
-        avaList.push( [preX + 2, preY - 1] )
-        avaList.push( [preX + 2, preY + 1] )
-        avaList.push( [preX + 1, preY + 2] )
+        let avaList = Game.get_knight_pos_list( prePos )
 
         avaList = avaList.filter( ( avaPos ) => { return Game.is_in_range( avaPos ) } )
         avaList = avaList.filter( ( avaPos ) => { return board[avaPos[0]][avaPos[1]].color != clr } )
         return avaList
     }
 
+    static bishop_preview( prePos, board ) {
+        let [preX, preY] = prePos
+        let clr = board[preX][preY].color
+
+        let upLeftPos = Game.get_straight_list( prePos, -1, -1, clr, board )
+        let upRightPos = Game.get_straight_list( prePos, -1, 1, clr, board )
+        let DownLeftPos = Game.get_straight_list( prePos, 1, -1, clr, board )
+        let DownRightPos = Game.get_straight_list( prePos, 1, 1, clr, board )
+
+        let avaList = [].concat.apply( [], [upLeftPos, upRightPos, DownLeftPos, DownRightPos] )
+        return avaList
+    }
+
+    static rook_preview( prePos, board ) {
+        let [preX, preY] = prePos
+        let clr = board[preX][preY].color
+
+        let upPos = Game.get_straight_list( prePos, -1, 0, clr, board )
+        let downPos = Game.get_straight_list( prePos, 1, 0, clr, board )
+        let leftPos = Game.get_straight_list( prePos, 0, -1, clr, board )
+        let rightPos = Game.get_straight_list( prePos, 0, 1, clr, board )
+
+        let avaList = [].concat.apply( [], [upPos, downPos, leftPos, rightPos] )
+        return avaList
+    }
+
+    static queen_preview( prePos, board ) {
+        let avaList = Game.bishop_preview( prePos, board )
+        avaList = avaList.concat( Game.rook_preview( prePos, board ) )
+
+        return avaList
+    }
+
+    static king_preview( prePos, board ) {
+        let [preX, preY] = prePos
+        let clr = board[preX][preY].color
+        let avaList = Game.get_king_pos_list( prePos )
+
+        avaList = avaList.filter( ( avaPos ) => {
+            let [avaX, avaY] = avaPos
+            return board[avaX][avaY].color != clr
+        } )
+
+        return avaList
+    }
+
+    // Other functions
     static is_in_range( pos ) {
         let [x, y] = pos
         return ( x >= 0 && x <= BOARD_LEN - 1 && y >= 0 && y <= BOARD_LEN - 1 )
     }
 
-    static is_check( board, checkClr ) {
+    static is_check( board, beCheckedClr ) {
         // Get king positions
         let [kingX, kingY] = [0, 0]
         for ( let x = 0; x < BOARD_LEN; x++ ) {
             for ( let y = 0; y < BOARD_LEN; y++ ) {
-                if ( board[x][y].color == checkClr && board[x][y].type == 'king' ) {
+                if ( board[x][y].color == beCheckedClr && board[x][y].type == 'king' ) {
                     kingX = x
                     kingY = y
                 }
@@ -323,7 +229,7 @@ class Game {
         let kingPos = [kingX, kingY]
 
         // test pawn 
-        if ( checkClr == 'b' ) {
+        if ( beCheckedClr == 'b' ) {
             let possiblePawn_1 = Game.get_info( [kingX + 1, kingY - 1], board )
             if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'w' ) {
                 return true
@@ -333,7 +239,7 @@ class Game {
                 return true
             }
         }
-        if ( checkClr == 'w' ) {
+        if ( beCheckedClr == 'w' ) {
             let possiblePawn_1 = Game.get_info( [kingX - 1, kingY - 1], board )
             if ( possiblePawn_1.type == 'pawn' && possiblePawn_1.color == 'b' ) {
                 return true
@@ -349,7 +255,7 @@ class Game {
         for ( let pos of possibleKnightPoses ) {
             let possibleKnight = Game.get_info( pos, board )
             if ( possibleKnight.type == 'knight' &&
-                ( possibleKnight.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( possibleKnight.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -363,7 +269,7 @@ class Game {
         let infos = [upInfo, downInfo, leftInfo, rightInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'rook' || info.type == 'queen' ) &&
-                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -377,7 +283,7 @@ class Game {
         infos = [upRightInfo, upLeftInfo, downRightInfo, downLeftInfo]
         for ( let info of infos ) {
             if ( ( info.type == 'bishop' || info.type == 'queen' ) &&
-                ( info.color == ( checkClr == 'w' ? 'b' : 'w' ) ) ) {
+                ( info.color == Game.op_clr( beCheckedClr ) ) ) {
                 return true
             }
         }
@@ -387,7 +293,7 @@ class Game {
         for ( let pos of possibleKingPoses ) {
             let possibleKing = Game.get_info( pos, board )
             if ( possibleKing.type == 'king' &&
-                possibleKing.color == ( checkClr == 'w' ? 'b' : 'w' ) ) {
+                possibleKing.color == Game.op_clr( beCheckedClr ) ) {
                 return true
             }
         }
@@ -395,7 +301,10 @@ class Game {
     }
 
     static get_info( pos, board ) {
+        // Get information of the grid ( safer than access directly )
+
         let [x, y] = pos
+
         if ( Game.is_in_range( [x, y] ) == false ) {
             return {
                 type: 'nothing',
@@ -411,7 +320,7 @@ class Game {
     static get_knight_pos_list( pos ) {
         let [x, y] = pos
 
-        return [
+        let posList = [
             [x + 1, y + 2],
             [x - 1, y + 2],
             [x + 1, y - 2],
@@ -420,12 +329,15 @@ class Game {
             [x - 2, y + 1],
             [x + 2, y - 1],
             [x - 2, y - 1],
-        ]
+        ].filter( ( pos ) => { return Game.is_in_range( pos ) } )
+
+        return posList
     }
 
     static get_king_pos_list( pos ) {
         let [x, y] = pos
-        return [
+
+        let posList = [
             [x - 1, y - 1],
             [x - 1, y],
             [x - 1, y + 1],
@@ -434,23 +346,27 @@ class Game {
             [x + 1, y],
             [x + 1, y - 1],
             [x, y - 1]
-        ]
+        ].filter( ( pos ) => { return Game.is_in_range( pos ) } )
+
+        return posList
     }
 
     static get_straight_pos( oriPos, delX, delY, board ) {
         // Get the nearest position with piece along certain direction
         // E.g. delX=0; delY=1 => get the nearest position with piece along right side of oriPos
-
         let [x, y] = oriPos
+
         while ( Game.is_in_range( [x, y] ) ) {
             x += delX
             y += delY
             let info = Game.get_info( [x, y], board )
+
+            // meet something 
             if ( info.type != 'nothing' ) {
                 return [x, y]
             }
         }
-        return [-1, -1]
+        return [x - delX, y - delY]
     }
 
     static get_straight_info( oriPos, delX, delY, board ) {
@@ -458,47 +374,134 @@ class Game {
         return Game.get_info( pos, board )
     }
 
+    static get_straight_list( oriPos, delX, delY, myClr, board ) {
+        let [oriX, oriY] = oriPos
+        let straightList = []
+
+        let [x, y] = [oriX + delX, oriY + delY]
+
+        while ( Game.is_in_range( [x, y] ) && Game.get_info( [x, y], board ).color == 'nothing' ) {
+            straightList.push( [x, y] )
+            x += delX
+            y += delY
+        }
+        if ( Game.get_info( [x, y], board ).color == Game.op_clr( myClr ) ) {
+            straightList.push( [x, y] )
+        }
+
+        return straightList
+    }
+
     constructor() {
+        // Game ids 
         this.gameID = uuid()
         this.wID = ''
         this.bID = ''
-        this.status = ''
 
-        this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
-        this.turn = 'w'
+        // special rules 
+        this.special_rule = {
+            'castling': {
+                'w': {
+                    'long': true,
+                    'short': true
+                },
+                'b': {
+                    'long': true,
+                    'short': true
+                }
+            },
+            'pass': {
+                'w': -1,
+                'b': -1
+            }
+        }
+
+        // game status 
         this.playerCnt = 0
+        this.board = DEBUG ? Game.debug_init_board() : Game.init_board()
+        this.status = ''
+        this.turn = 'w'
+        this.previewList = []
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            this.previewList.push( [] )
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                this.previewList[x].push( [[]] )
+            }
+        }
+        this.update_preview_list( 'w' )
+
     }
 
     move( from, to ) {
+        // clean board 
         this.clean_ava()
-        let avaBoard = this.preview( from )
+
+
+        // TODO: whether is pass 
+
+        // move 
         let [fromX, fromY] = from
         let [toX, toY] = to
-        if ( avaBoard[toX][toY].ava == true ) {
-            let piece = this.board[fromX][fromY]
+        let piece = this.board[fromX][fromY]
+
+        if ( this.previewList[fromX][fromY].find( ( pos ) => { return ( pos[0] == to[0] ) && ( pos[1] == to[1] ) } ) ) {
+
             this.board[fromX][fromY] = {
                 type: 'nothing',
                 color: 'nothing',
                 ava: false
             }
             this.board[toX][toY] = piece
+
+            // Castling 
+            if ( ( piece.type == 'king' ) && ( Math.abs( toY - fromY ) == 2 ) ) {
+                // Long 
+                if ( toY == 2 ) {
+                    this.board[fromX][3].type = 'rook'
+                    this.board[fromX][3].color = piece.color
+
+                    this.board[fromX][0].type = 'nothing'
+                    this.board[fromX][0].color = 'nothing'
+                }
+                // Short
+                else if ( toY == 6 ) {
+                    this.board[fromX][5].type = 'rook'
+                    this.board[fromX][5].color = piece.color
+
+                    this.board[fromX][7].type = 'nothing'
+                    this.board[fromX][7].color = 'nothing'
+                }
+            }
         }
         else {
-            return this.board
+            // cannot move
+            return
         }
 
-        this.clean_ava()
+        // Check castling condition
+        if ( piece.type == 'king' ) {
+            this.special_rule['castling'][this.turn]['long'] = false
+            this.special_rule['castling'][this.turn]['short'] = false
+        }
+        // Long  
+        else if ( ( piece.type == 'rook' ) && ( fromY == 0 ) ) {
+            this.special_rule['castling'][this.turn]['long'] = false
+        }
+        // short 
+        else if ( ( piece.type == 'rook' ) && ( fromY == 7 ) ) {
+            this.special_rule['castling'][this.turn]['short'] = false
+        }
 
-        if ( this.turn == 'w' ) {
-            this.turn = 'b'
+        // Check pass condition 
+        if ( ( piece.type == 'pawn' ) && ( Math.abs( toX - fromX ) == 2 ) ) {
+            this.special_rule['pass'][piece.color] = toY
         }
         else {
-            this.turn = 'w'
+            this.special_rule['pass'][piece.color] = -1
         }
+
         this.check_pawn_transform()
-
-        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
-        return this.board
+        this.switch_turn_and_update()
     }
 
     preview( prePos ) {
@@ -511,30 +514,24 @@ class Game {
 
         // Preview position
         let [preX, preY] = prePos
-        let pieceType = this.board[preX][preY].type
+        if ( this.board[preX][preY].color != this.turn ) {
+            return this.board
+        }
 
         // Get preview board 
-        let avaList = Game.previewFunctions[pieceType]( prePos, this.board )
-        avaList = avaList.filter( ( avaPos ) => {
-            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
-            let [preX, preY] = prePos
-            let [avaX, avaY] = avaPos
-
-            trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[preX][preY] ) )
-            trialBoard[preX][preY] = {
-                type: 'nothing',
-                color: 'nothing',
-                ava: false
-            }
-
-            return Game.is_check( trialBoard, this.turn ) == false
-        } )
-
-        for ( let i = 0; i < avaList.length; i++ ) {
-            let [x, y] = avaList[i]
+        let avaList = this.previewList[preX][preY]
+        for ( let pos of avaList ) {
+            let [x, y] = pos
             this.board[x][y].ava = true
         }
-        return this.board
+    }
+
+    switch_turn_and_update() {
+        this.turn = Game.op_clr( this.turn )
+
+        this.update_preview_list()
+        this.status = Game.is_check( this.board, this.turn ) ? `${this.turn == 'w' ? 'White' : 'Black'} CHECKED` : ''
+        this.status = this.is_checkmate() ? 'checkmate' : this.status
     }
 
     clean_ava() {
@@ -556,6 +553,18 @@ class Game {
         }
     }
 
+    is_checkmate() {
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                if ( this.previewList[x][y].length != 0 ) {
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
     player_join( playerID ) {
         if ( this.playerCnt == 0 ) {
             this.wID = playerID
@@ -570,6 +579,165 @@ class Game {
         else {
             // Full
             return false
+        }
+    }
+
+    update_preview_list() {
+        // General step 
+        for ( let x = 0; x < BOARD_LEN; x++ ) {
+            for ( let y = 0; y < BOARD_LEN; y++ ) {
+                // only check grid with current color 
+                if ( this.board[x][y].color != this.turn ) {
+                    this.previewList[x][y] = []
+                    continue
+                }
+
+                // current position
+                let curPos = [x, y]
+                let type = Game.get_info( curPos, this.board ).type
+                let avaList = Game.previewFunctions[type]( curPos, this.board )
+
+                // filter check 
+                avaList = avaList.filter( ( avaPos ) => {
+                    let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+                    let [curX, curY] = curPos
+                    let [avaX, avaY] = avaPos
+
+                    trialBoard[avaX][avaY] = JSON.parse( JSON.stringify( trialBoard[curX][curY] ) )
+                    trialBoard[curX][curY] = {
+                        type: 'nothing',
+                        color: 'nothing',
+                        ava: false
+                    }
+
+                    return Game.is_check( trialBoard, this.turn ) == false
+                } )
+
+                this.previewList[x][y] = avaList
+            }
+        }
+
+        // Castling 
+        if ( this.special_rule['castling'][this.turn]['long'] == true ) {
+            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+            let x = ( this.turn == 'w' ? 7 : 0 )
+
+            if ( trialBoard[x][1].type == 'nothing' &&
+                trialBoard[x][2].type == 'nothing' &&
+                trialBoard[x][3].type == 'nothing' ) {
+
+                trialBoard[x][2].type = 'king'
+                trialBoard[x][2].color = this.turn
+                trialBoard[x][3].type = 'rook'
+                trialBoard[x][3].color = this.turn
+
+                trialBoard[x][0].type = 'nothing'
+                trialBoard[x][0].color = 'nothing'
+                trialBoard[x][4].type = 'nothing'
+                trialBoard[x][4].color = 'nothing'
+
+                if ( Game.is_check( trialBoard, this.turn ) == false ) {
+                    this.previewList[x][4].push( [x, 2] )
+                }
+            }
+        }
+        if ( this.special_rule['castling'][this.turn]['short'] == true ) {
+            let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+            let x = ( this.turn == 'w' ? 7 : 0 )
+
+            if ( trialBoard[x][5].type == 'nothing' &&
+                trialBoard[x][6].type == 'nothing' ) {
+
+                trialBoard[x][6].type = 'king'
+                trialBoard[x][6].color = this.turn
+                trialBoard[x][5].type = 'rook'
+                trialBoard[x][5].color = this.turn
+
+                trialBoard[x][7].type = 'nothing'
+                trialBoard[x][7].color = 'nothing'
+                trialBoard[x][4].type = 'nothing'
+                trialBoard[x][4].color = 'nothing'
+
+                if ( Game.is_check( trialBoard, this.turn ) == false ) {
+                    this.previewList[x][4].push( [x, 6] )
+                }
+            }
+        }
+
+        // TODO: pass
+        if ( this.turn == 'w' && this.special_rule['pass']['b'] != -1 ) {
+            let y = this.special_rule['pass']['b']
+
+            let leftP = Game.get_info( [3, y - 1], this.board )
+            if ( leftP.type == 'pawn' && leftP.color == 'w' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[3][y].type = 'nothing'
+                trialBoard[3][y].color = 'nothing'
+
+                trialBoard[3][y - 1].type = 'nothing'
+                trialBoard[3][y - 1].color = 'nothing'
+                trialBoard[2][y].type = 'pawn'
+                trialBoard[2][y].color = 'w'
+
+                if ( Game.is_check( trialBoard, 'w' ) == false ) {
+                    this.previewList[3][y - 1].push( [2, y] )
+                }
+            }
+
+            let rightP = Game.get_info( [3, y + 1], this.board )
+            if ( rightP.type == 'pawn' && rightP.color == 'w' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[3][y].type = 'nothing'
+                trialBoard[3][y].color = 'nothing'
+
+                trialBoard[3][y + 1].type = 'nothing'
+                trialBoard[3][y + 1].color = 'nothing'
+                trialBoard[2][y].type = 'pawn'
+                trialBoard[2][y].color = 'w'
+
+                if ( Game.is_check( trialBoard, 'w' ) == false ) {
+                    this.previewList[3][y + 1].push( [2, y] )
+                }
+            }
+        }
+        if ( this.turn == 'b' && this.special_rule['pass']['w'] != -1 ) {
+            let y = this.special_rule['pass']['w']
+
+            let leftP = Game.get_info( [4, y - 1], this.board )
+            if ( leftP.type == 'pawn' && leftP.color == 'b' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[5][y].type = 'nothing'
+                trialBoard[5][y].color = 'nothing'
+
+                trialBoard[4][y - 1].type = 'nothing'
+                trialBoard[4][y - 1].color = 'nothing'
+                trialBoard[5][y].type = 'pawn'
+                trialBoard[5][y].color = 'b'
+
+                if ( Game.is_check( trialBoard, 'b' ) == false ) {
+                    this.previewList[4][y - 1].push( [5, y] )
+                }
+            }
+
+            let rightP = Game.get_info( [4, y + 1], this.board )
+            if ( rightP.type == 'pawn' && rightP.color == 'b' ) {
+                let trialBoard = JSON.parse( JSON.stringify( this.board ) )
+
+                trialBoard[5][y].type = 'nothing'
+                trialBoard[5][y].color = 'nothing'
+
+                trialBoard[4][y + 1].type = 'nothing'
+                trialBoard[4][y + 1].color = 'nothing'
+                trialBoard[5][y].type = 'pawn'
+                trialBoard[5][y].color = 'b'
+
+                if ( Game.is_check( trialBoard, 'b' ) == false ) {
+                    this.previewList[4][y + 1].push( [5, y] )
+                }
+            }
         }
     }
 }
