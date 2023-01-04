@@ -3,7 +3,7 @@ import { Button, Modal, Form, Input } from 'antd'
 import { useChess } from "../containers/hooks/useChess"
 
 const RegisterModal = () => {
-    const { register, registerFail, setRegisterFail } = useChess()
+    const { register, registerFailMsg, registerFail, setRegisterFail } = useChess()
     const [ isModalOpen, setIsModalOpen ] = useState( false )
     const [ regName, setRegName ] = useState( "" )
     const [ regPassword, setRegPassword ] = useState( "" )
@@ -74,6 +74,7 @@ const RegisterModal = () => {
                         <Input.Password />
                     </Form.Item>
                 </Form>
+                <p style={{ opacity: registerFail ? "1" : "0", color: "red" }}>{registerFailMsg}</p>
             </Modal>
         </>
     )

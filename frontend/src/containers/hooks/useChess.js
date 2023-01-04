@@ -20,6 +20,9 @@ const ChessContext = createContext(
         registerFail: Boolean,
         setRegisterFail: () => {},
 
+        registerFailMsg: "",
+        setRegisterFailMsg: () => {},
+
         board: [], // 8*8 metrix 
         setBoard: () => {},
 
@@ -76,6 +79,7 @@ const ChessProvider = ( props ) => {
     const [ hasLogin, setHasLogin ] = useState( false )
     const [ hasStarted, setHasStarted ] = useState( false )
     const [ registerFail, setRegisterFail ] = useState( false )
+    const [ registerFailMsg, setRegisterFailMsg ] = useState( "" )
     const [ board, setBoard ] = useState( [] )
     const [ turn, setTurn ] = useState( '' )
     const [ myColor, setMyColor ] = useState( '' )
@@ -160,6 +164,7 @@ const ChessProvider = ( props ) => {
                     setRegisterFail( false )
                 } else {
                     setRegisterFail( true )
+                    setRegisterFailMsg( msg )
                 }
                 break
             }
@@ -271,6 +276,9 @@ const ChessProvider = ( props ) => {
 
                     registerFail,
                     setRegisterFail,
+
+                    registerFailMsg,
+                    setRegisterFailMsg,
 
                     board,
                     setBoard,
