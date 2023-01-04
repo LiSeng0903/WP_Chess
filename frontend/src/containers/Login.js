@@ -8,7 +8,7 @@ const FullLoginWrapper = styled.div`
     height:100%;
     width:100%;
     background-image: url(${chessIMG});
-    background-size: 1450px;
+    background-size: cover;
     display: flex;
     flex-direction: column;
     justify-content: center;
