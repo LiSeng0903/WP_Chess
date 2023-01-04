@@ -3,34 +3,15 @@ import { UserOutlined } from "@ant-design/icons"
 import { useChess } from "../containers/hooks/useChess"
 import { useState } from "react"
 
-const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
-    const { createRoom, joinRoom } = useChess()
-    const [ user, setUser ] = useState( "" )
+const Enter = ( { setLoginError } ) => {
+    const { login } = useChess()
 
     const onFinish = ( values ) => {
-        if ( !values.roomNumber ) {
-            setLoginError( true )
-        } else {
-            setName( values.userName )
-            joinRoom( values.roomNumber, values.userName )
-        }
+        login( values.userName, values.password )
     }
 
     const onFinishFailed = ( errorInfo ) => {
         setLoginError( true )
-    }
-
-    const onValuesChange = ( allValues ) => {
-        if ( allValues.userName ) {
-            setUser( allValues.userName )
-        }
-    }
-
-    const handleOnCreate = () => {
-        if ( user ) {
-            setName( user )
-            createRoom( user )
-        }
     }
 
     return (
@@ -44,7 +25,6 @@ const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
             }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            onValuesChange={onValuesChange}
             autoComplete="off"
         >
             <Form.Item
@@ -53,7 +33,7 @@ const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
                 rules={[
                     {
                         required: true,
-                        message: 'Please input your username!',
+                        message: 'Please enter your username!',
                     },
                 ]}
             >
@@ -61,16 +41,16 @@ const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
             </Form.Item>
 
             <Form.Item
-                label="Room Number"
-                name="roomNumber"
+                label="Password"
+                name="password"
                 rules={[
                     {
-                        required: false,
-                        // message: 'Please input your password!',
+                        required: true,
+                        message: 'Please enter password!',
                     },
                 ]}
             >
-                <Input />
+                <Input.Password />
             </Form.Item>
 
             <Form.Item
@@ -80,18 +60,7 @@ const Enter = ( { me, setName, roomNumber, setRoomNumber, setLoginError } ) => {
                 }}
             >
                 <Button type="primary" htmlType="submit">
-                    Start!
-                </Button>
-            </Form.Item>
-
-            <Form.Item
-                wrapperCol={{
-                    offset: 8,
-                    span: 16,
-                }}
-            >
-                <Button type="primary" htmlType="submit" onClick={handleOnCreate}>
-                    Create Room
+                    Login
                 </Button>
             </Form.Item>
         </Form>

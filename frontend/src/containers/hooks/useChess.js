@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-const SERVER_IP = 'localhost'
+const SERVER_IP = '192.168.0.144'
 const clientWS = new WebSocket( 'ws://' + SERVER_IP + ':4000' )
 
 const sendData = async ( data ) => {
@@ -10,6 +10,9 @@ const sendData = async ( data ) => {
 
 const ChessContext = createContext(
     {
+        hasLogin: Boolean,
+        setHasLogin: () => {},
+
         hasStarted: Boolean,
         setHasStarted: () => {},
 
@@ -49,8 +52,12 @@ const ChessContext = createContext(
         loginError: Boolean, //determone if user has enter correct or valid info
         setLoginError: () => {},
 
+        joinError: Boolean,
+        setJoinError: () => {},
+
         preview: () => {},
         move: () => {},
+        login: () => {},
         createRoom: () => {},
         joinRoom: () => {},
     }
@@ -58,46 +65,53 @@ const ChessContext = createContext(
 
 
 const ChessProvider = ( props ) => {
-    const [hasStarted, setHasStarted] = useState( false )
-    const [board, setBoard] = useState( [] )
-    const [turn, setTurn] = useState( '' )
-    const [myColor, setMyColor] = useState( '' )
-    const [focusP, setFocusP] = useState( [] )
-    const [winner, setWinner] = useState( '' )
-    const [name, setName] = useState( "Player" )
-    const [opponentName, setOpponentName] = useState( "Waiting for Opponent" )
-    const [roomNumber, setRoomNumber] = useState( "Welcome!" )
-    const [connectionID, setConnectionID] = useState( "" )
-    const [waitingForOpponent, setWaitingForOpponent] = useState( true )
-    const [status, setStatus] = useState( "" )
-    const [loginError, setLoginError] = useState( false )
+    const [ hasLogin, setHasLogin ] = useState( false )
+    const [ hasStarted, setHasStarted ] = useState( false )
+    const [ board, setBoard ] = useState( [] )
+    const [ turn, setTurn ] = useState( '' )
+    const [ myColor, setMyColor ] = useState( '' )
+    const [ focusP, setFocusP ] = useState( [] )
+    const [ winner, setWinner ] = useState( '' )
+    const [ name, setName ] = useState( "Player" )
+    const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
+    const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
+    const [ connectionID, setConnectionID ] = useState( "" )
+    const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
+    const [ status, setStatus ] = useState( "" )
+    const [ loginError, setLoginError ] = useState( false )
+    const [ joinError, setJoinError ] = useState( false )
 
 
 
     // sending
     const preview = ( previewPos ) => {
         // get preview board 
-        sendData( ["preview", previewPos] )
+        sendData( [ "preview", previewPos ] )
     }
 
     const move = ( from, to ) => {
         // get moved board 
-        sendData( ["move", { from, to }] )
+        sendData( [ "move", { from, to } ] )
+    }
+
+    const login = ( name, password ) => {
+        // login
+        sendData( [ "login", [ name, password ] ] )
     }
 
     const init = () => {
         // get initial board 
-        sendData( ['init'] )
+        sendData( [ 'init' ] )
     }
 
-    const createRoom = ( name ) => {
+    const createRoom = () => {
         // first person create a game room
-        sendData( ["createRoom", name] )
+        sendData( [ "createRoom", name ] )
     }
 
     const joinRoom = ( roomNumber, name ) => {
         // second person join a room
-        sendData( ["joinRoom", [roomNumber, name]] )
+        sendData( [ "joinRoom", [ roomNumber, name ] ] )
     }
 
 
@@ -112,9 +126,20 @@ const ChessProvider = ( props ) => {
                 break
             }
 
+            case "rp_login": {
+                console.log( response )
+                const [ type, user ] = response
+                if ( type === "Success" ) {
+                    setName( user )
+                    setHasLogin( true )
+                } else {
+                    setLoginError( true )
+                }
+                break
+            }
+
             case "createRoomSuccess": {
-                console.log( waitingForOpponent )
-                const [game, playerColor, gameID] = response
+                const [ game, playerColor, gameID ] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -125,7 +150,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "joinRoomSuccess": {
-                const [game, playerColor, gameID] = response
+                const [ game, playerColor, gameID ] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -137,12 +162,12 @@ const ChessProvider = ( props ) => {
 
             case "joinRoomFailed": {
                 const errorMsg = response
-                setLoginError( true )
+                setJoinError( true )
                 break
             }
 
             case "gameStarted": {
-                const [newGame, opName] = response
+                const [ newGame, opName ] = response
                 setWaitingForOpponent( false )
                 setBoard( newGame.board )
                 setTurn( newGame.turn )
@@ -211,6 +236,9 @@ const ChessProvider = ( props ) => {
         <ChessContext.Provider
             value={
                 {
+                    hasLogin,
+                    setHasLogin,
+
                     hasStarted,
                     setHasStarted,
 
@@ -247,8 +275,12 @@ const ChessProvider = ( props ) => {
                     loginError,
                     setLoginError,
 
+                    joinError,
+                    setJoinError,
+
                     preview,
                     move,
+                    login,
                     createRoom,
                     joinRoom,
                 }

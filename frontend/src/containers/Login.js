@@ -26,17 +26,13 @@ const Title = styled.div`
 `
 
 const Login = () => {
-    const { name, setName, roomNumber, setRoomNumber, loginError, setLoginError } = useChess()
+    const { loginError, setLoginError } = useChess()
 
     return (
         <LoginWrapper>
-            <Title style={{ fontFamily: "Comic Sans MS" }}>Chess!</Title>
-            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>Please Enter a Valid Room Number or a User Name.</p>
+            <Title style={{ fontFamily: "Comic Sans MS" }}>Login</Title>
+            <p style={{ opacity: loginError ? "1" : "0", color: "red" }}>Please Enter a Valid User Name or Correct Password.</p>
             <Enter
-                me={name}
-                setName={setName}
-                roomNumber={roomNumber}
-                setRoomNumber={setRoomNumber}
                 setLoginError={setLoginError}
             />
         </LoginWrapper>
