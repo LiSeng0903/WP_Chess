@@ -21,7 +21,7 @@ serverWS.on( "connection", ( clientWS ) => {
 
     // store connection 
     let connectionID = uuid()
-    connections[ connectionID ] = {
+    connections[connectionID] = {
         ws: clientWS,
         name: '',
         game: ''
@@ -30,7 +30,8 @@ serverWS.on( "connection", ( clientWS ) => {
     clientWS.onmessage = wsConnect.onMessage( clientWS, connectionID, games, connections )
     console.log( 'player connect' )
 
-const PORT = 4000
-server.listen( PORT, SERVER_IP, () => {
-    console.log( `server is on ${PORT}` )
+    const PORT = 4000
+    server.listen( PORT, SERVER_IP, () => {
+        console.log( `server is on ${PORT}` )
+    } )
 } )
