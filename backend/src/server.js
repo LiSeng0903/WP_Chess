@@ -10,8 +10,8 @@ import { Player } from "../models/Player.js"
 import bcrypt from 'bcryptjs'
 
 // Constant 
-// const SERVER_IP = 'localhost'
-const SERVER_IP = '192.168.0.144'
+const SERVER_IP = 'localhost'
+// const SERVER_IP = '192.168.0.144'
 const INIT = true
 
 //mongoose connection
@@ -35,7 +35,7 @@ db.once( 'open', () => {
     serverWS.on( "connection", ( clientWS ) => {
         // store connection 
         let connectionID = uuid()
-        connections[connectionID] = {
+        connections[ connectionID ] = {
             ws: clientWS,
             name: '',
             game: ''
