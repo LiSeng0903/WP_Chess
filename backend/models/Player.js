@@ -10,7 +10,7 @@ const PlayerSchema = new Schema( {
     password: {
         type: String,
         required: [true, 'Password field is missed']
-    },
+    }
 } )
 
 const Player = mongoose.model( 'players', PlayerSchema )

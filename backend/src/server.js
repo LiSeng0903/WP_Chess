@@ -12,7 +12,7 @@ import bcrypt from 'bcryptjs'
 // Constant 
 // const SERVER_IP = 'localhost'
 const SERVER_IP = '192.168.0.144'
-const INIT = true
+const INIT = false
 
 //mongoose connection
 mongoose.set( 'strictQuery', false )
@@ -52,15 +52,12 @@ server.listen( PORT, SERVER_IP, () => {
 } )
 
 const init_test_player = async () => {
+    await Player.remove( {} )
+
     const testName = 'Ali'
     const testPassword = '11111111'
-    const hash_1 = bcrypt.hashSync( testPassword, 12 )
 
-    let temp = bcrypt.compareSync( '11211111', hash_1 )
-    console.log( hash_1 )
-    console.log( temp )
-
-    const testPlayer = new Player( { name: testName, password: testPassword } )
+    const testPlayer = new Player( { name: testName, password: bcrypt.hashSync( testPassword, 10 ) } )
     try {
         await testPlayer.save()
         console.log( 'init success' )
