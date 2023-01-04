@@ -1,6 +1,6 @@
 import { uuid } from "uuidv4"
 
-const DEBUG = false
+const DEBUG = true
 const BOARD_LEN = 8
 
 class Game {
@@ -19,10 +19,12 @@ class Game {
         board[0][4].color = 'b'
         board[0][4].type = 'king'
 
-        board[0][0].color = 'w'
-        board[0][0].type = 'rook'
-        board[2][2].color = 'w'
-        board[2][2].type = 'queen'
+        board[0][1].color = 'w'
+        board[0][1].type = 'rook'
+        board[0][6].color = 'w'
+        board[0][6].type = 'rook'
+        board[2][4].color = 'w'
+        board[2][4].type = 'queen'
         board[5][2].color = 'w'
         board[5][2].type = 'king'
         return board
