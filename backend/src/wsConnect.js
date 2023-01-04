@@ -93,12 +93,6 @@ export default {
                     sendData( ['rp_login', ['Success', playerID]], clientWS )
                     console.log( 'Login success' )
 
-
-                    console.log( 'player connections ======================' )
-                    console.log( playerConnections )
-                    console.log( 'connections ======================' )
-                    console.log( connections )
-
                     break
                 }
 
@@ -119,6 +113,8 @@ export default {
                     // send message 
                     // payload: [game, color, gameID]
                     sendData( ['createRoomSuccess', [newGame, 'w', newGame.gameID]], clientWS )
+
+                    console.log( `Create new game by ${playerID}` )
                     break
                 }
                 case "joinRoom": {
@@ -129,6 +125,7 @@ export default {
                     // Game not exist 
                     if ( games[gameID] == undefined ) {
                         sendData( ['joinRoomFailed', 'Game doesn\'t exist'], clientWS )
+                        console.log( 'Join failed: the game doesn\'t exist' )
                         return
                     }
 
@@ -139,6 +136,7 @@ export default {
 
                         // payload: [game, color, gameID]
                         sendData( ['joinRoomSuccess', [game, 'b', gameID]], clientWS )
+                        console.log( 'Join success' )
 
                         // send start msg to both players 
                         // payload: [game, opponentName ]
@@ -148,10 +146,12 @@ export default {
 
                         sendData( ['gameStarted', [game, game.bID]], wWS )
                         sendData( ['gameStarted', [game, game.wID]], bWS )
+                        console.log( 'Game started' )
                     }
                     else {
                         // Game full
                         sendData( ['joinRoomFailed', 'Game is full'], clientWS )
+                        console.log( 'Join failed: the game is full' )
                         return
                     }
                     break
@@ -165,6 +165,7 @@ export default {
 
                     game.preview( prePos )
                     sendData( ["do", game], clientWS )
+                    console.log( 'Preview' )
                     break
                 }
                 case "move": {
@@ -175,6 +176,7 @@ export default {
 
                     game.move( from, to )
                     boardcastDataToGame( game.gameID, ['do', game], games, playerConnections )
+                    console.log( 'Moved' )
                     break
                 }
             }
