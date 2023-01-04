@@ -75,6 +75,15 @@ export default {
                         let pastWS = playerConnections[playerID].ws
                         playerConnections[playerID].ws = clientWS
 
+                        if ( playerConnections[playerID].gameID ) {
+                            // is playing a game 
+                            let gameID = playerConnections[playerID].gameID
+                            let game = games[gameID]
+                            let opName = ( game.wID == playerID ? game.wID : game.bID )
+                            let clr = ( game.wID == playerID ? 'w' : 'b' )
+                            sendData( ['sudden_game', [game, opName, gameID, clr]], clientWS )
+                        }
+
                         sendData( ['Logged in from other place'], pastWS )
                     }
 
