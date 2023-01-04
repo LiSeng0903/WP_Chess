@@ -65,7 +65,7 @@ const ChessContext = createContext(
 
 
 const ChessProvider = ( props ) => {
-    const [ hasLogin, setHasLogin ] = useState( true )
+    const [ hasLogin, setHasLogin ] = useState( false )
     const [ hasStarted, setHasStarted ] = useState( false )
     const [ board, setBoard ] = useState( [] )
     const [ turn, setTurn ] = useState( '' )
