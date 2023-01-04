@@ -6,6 +6,7 @@ import wsConnect from "./wsConnect.js"
 import { uuid } from 'uuidv4'
 import mongoose from "mongoose"
 import mongo from './mongo.js'
+import { Player } from "../models/Player.js"
 
 // Constant 
 const SERVER_IP = 'localhost'
@@ -26,6 +27,7 @@ let connections = [] // list of connection info, index is connection ID; { ws:..
 
 db.once( 'open', () => {
     console.log( 'db connected' )
+    init_test_player()
 
     serverWS.on( "connection", ( clientWS ) => {
         // store connection 
@@ -45,3 +47,16 @@ const PORT = process.env.PORT || 4000
 server.listen( PORT, SERVER_IP, () => {
     console.log( `server is on ${PORT}` )
 } )
+
+const init_test_player = async () => {
+    const testName = 'Ali'
+    const testPassword = '11111111'
+    const testPlayer = new Player( { name: testName, password: testPassword } )
+    try {
+        await testPlayer.save()
+        console.log( 'init success' )
+    }
+    catch ( error ) {
+        throw new Error( 'Message DB save error' + error )
+    }
+}
