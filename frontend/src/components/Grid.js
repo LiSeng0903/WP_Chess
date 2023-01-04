@@ -6,10 +6,10 @@ const GridWrapper = styled.div`
     background-color: ${( { x, y, ava, isFocus } ) => {
         if ( isFocus ) { return '#dab141' }
         else if ( ava ) {
-            return ( ( x + y ) % 2 == 0 ? '#63b331' : '#dd1616' )
+            return ( ( x + y ) % 2 == 0 ? '#B4D4D2' : '#F5DEDE' )
         }
         else {
-            return ( ( x + y ) % 2 == 0 ? '#294b14' : '#8a0e0e' )
+            return ( ( x + y ) % 2 == 0 ? '#7d9492' : '#D6B5B6' )
         }
     }
     };
