@@ -93,6 +93,12 @@ export default {
                     sendData( ['rp_login', ['Success', playerID]], clientWS )
                     console.log( 'Login success' )
 
+
+                    console.log( 'player connections ======================' )
+                    console.log( playerConnections )
+                    console.log( 'connections ======================' )
+                    console.log( connections )
+
                     break
                 }
 

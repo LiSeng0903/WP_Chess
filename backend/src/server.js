@@ -38,7 +38,6 @@ db.once( 'open', () => {
         // store connection 
         let connectionID = uuid()
         connections[connectionID] = {
-            ws: clientWS,
             playerID: '',
         }
 
