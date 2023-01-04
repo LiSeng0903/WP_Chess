@@ -12,7 +12,7 @@ import { init_test_player } from "./init_data.js"
 // Constant 
 const SERVER_IP = 'localhost'
 // const SERVER_IP = '192.168.0.144'
-const INIT = false
+const INIT = true
 
 //mongoose connection
 mongoose.set( 'strictQuery', false )

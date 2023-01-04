@@ -1,6 +1,6 @@
 import { uuid } from "uuidv4"
 
-const DEBUG = true
+const DEBUG = false
 const BOARD_LEN = 8
 
 class Game {
