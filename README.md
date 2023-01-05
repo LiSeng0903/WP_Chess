@@ -80,7 +80,7 @@
 前端邏輯設計、與後端連線
 
 ### 許圃菘
-設計 server、連接資料庫、與前端連線
+設計 server、連接資料庫、與前端連線、西洋棋邏輯
 
 ### 陳亮妤
 前端介面設計、找美術素材
@@ -97,13 +97,23 @@
 登入頁面、同時開啟多局遊戲、遊戲結束之後可再開新局、介面優化等都是本次網服專案新加入的功能。
 
 ## 使用第三方套件
+### 套件
++ 前端：react, antd
++ 後端：Http, Express, uuidv4, dotenv-defaults, nodemon, bcryptjs
++ 資料庫：mongoose
+
+### 圖片來源
++ Login、Jion 背景：https://pixabay.com/photos/chess-chessboard-board-game-3960184/
++ 棋盤背景：https://pixabay.com/photos/floor-wood-hardwood-floors-1256804/
++ 下棋背景：https://pixabay.com/photos/marble-background-backdrop-1006628/
++ 西洋棋圖片：https://github.com/AhmadAlkholy/Javascript-Chess-Game/tree/master/img
 
 ## 專題製作心得
 ### 張力升
-### 許圃菘
-### 陳亮妤
+在這次的專案中我負責的是前端的部分，我原本在上課的過程中覺得撰寫前端是一個簡單的作業，只要把架構決定好，剩下的就只要把內容填上就行，但是這次寫完完整的前端才感覺到，前端確實也不容易，有很多設計上的細節要注意，也必須花費很多心思以及時間。另外，這次也是我第一次和別人合作開發一個東西，這一次我才體驗到確實的分工在寫程式的體驗上是什麼感覺，也感覺到和彆人合作確實是一項需要練習的技巧。這次酸是收獲相當豐盛。
 
-圖片來源：
-- Login、Jion 背景：https://pixabay.com/photos/chess-chessboard-board-game-3960184/
-- 棋盤背景：https://pixabay.com/photos/floor-wood-hardwood-floors-1256804/
-- 下棋背景：https://pixabay.com/photos/marble-background-backdrop-1006628/
+### 許圃菘
+這次的專案充分體會到要從頭到尾弄好一個網路服務有多困難。最麻煩的地方在於紀錄許多連線、玩家跟遊戲的關係，某個玩家可能從許多地方登入、玩到一半重新登入等等，有許許多多的可能性都需要去考慮，才能讓人們體驗到完整的服務，不會玩到一半卡住。另外，要將許多不同的套件跟其他人的服務串起來也很困難。總之整個網服就是困難重重，但能做到的效果也很多、很厲害。
+
+### 陳亮妤
+由於學期改為 16 週，許多課堂的期末的時間規劃略微緊湊，接腫而至的專案限縮了不少發揮空間。但此次專案仍讓我獲益良多，使我對於套件的使用有更大的了解，對網頁的設計與排版更加熟悉。也很謝謝隊友們的付出，合力完成網頁，讓專案成果能夠完整得呈現。
