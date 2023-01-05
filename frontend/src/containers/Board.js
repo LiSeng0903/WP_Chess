@@ -117,6 +117,7 @@ const Board = () => {
         // not your turn 
         if ( turn != myColor ) return
         if ( winner != '' ) return
+        if ( waitingForOpponent ) return
 
         // preview 
         if ( board[ x ][ y ].color == myColor ) {
@@ -139,7 +140,7 @@ const Board = () => {
         <FullBoardWrapper>
             <LeftWrapper style={{ backgroundColor: "transparent" }}>
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "20px" }}>&ensp;Room Number: {roomNumber}</p>
-                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: "black"}}>{status}!</p>}
+                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: "black" }}>{status}!</p>}
                 <p style={{ alignSelf: "flex-end", fontFamily: "Comic Sans MS", fontSize: "35px" }}>{name}&ensp;</p>
             </LeftWrapper>
             <ChessBoardWrapper id="chess">
