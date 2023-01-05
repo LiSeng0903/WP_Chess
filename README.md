@@ -6,7 +6,7 @@
 + 題目名稱：西洋棋連線對戰遊戲 （原本為棒球紀錄系統，後來改變題目）
 + Deployed service 網址：（Deploy 失敗）
 + Github Repo 網址： https://github.com/LiSeng0903/WP_Chess.git
-+ Demo 影片網址：
++ Demo 影片網址：https://drive.google.com/file/d/1nRk1ngi2AY7hbtWIPqZR8g4X6HqAqFdw/view?usp=sharing
 + FB 社團貼文網址：
 + 這個服務在做什麼：讓玩家可以在線上下西洋棋
 
