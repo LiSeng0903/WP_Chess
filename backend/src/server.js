@@ -15,7 +15,9 @@ const SERVER_IP = 'localhost'
 // const SERVER_IP = 'XXX.XXX.XXX.XXX' <- 你的電腦 IP
 // ! SERVER_IP 改動在這裡 =====================================
 
+// ! 初始化改動在這裡 =====================================
 const INIT = false
+// ! 初始化改動在這裡 =====================================
 
 //mongoose connection
 mongoose.set( 'strictQuery', false )
