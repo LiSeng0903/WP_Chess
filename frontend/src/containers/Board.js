@@ -139,7 +139,7 @@ const Board = () => {
         <FullBoardWrapper>
             <LeftWrapper style={{ backgroundColor: "transparent" }}>
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "20px" }}>&ensp;Room Number: {roomNumber}</p>
-                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: myColor !== "w" ? "#B4D4D2" : "#F5DEDE" }}>{status}!</p>}
+                {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: "black"}}>{status}!</p>}
                 <p style={{ alignSelf: "flex-end", fontFamily: "Comic Sans MS", fontSize: "35px" }}>{name}&ensp;</p>
             </LeftWrapper>
             <ChessBoardWrapper id="chess">
