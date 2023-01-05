@@ -89,28 +89,28 @@ const ChessContext = createContext(
 
 
 const ChessProvider = ( props ) => {
-    const [hasLogin, setHasLogin] = useState( false )
-    const [hasStarted, setHasStarted] = useState( false )
-    const [registerFail, setRegisterFail] = useState( false )
-    const [registerFailMsg, setRegisterFailMsg] = useState( "" )
-    const [board, setBoard] = useState( [] )
-    const [turn, setTurn] = useState( '' )
-    const [myColor, setMyColor] = useState( '' )
-    const [focusP, setFocusP] = useState( [] )
-    const [winner, setWinner] = useState( "" )
-    const [endGame, setEndGame] = useState( false )
-    const [name, setName] = useState( "Player" )
-    const [opponentName, setOpponentName] = useState( "Waiting for Opponent" )
-    const [roomNumber, setRoomNumber] = useState( "Welcome!" )
-    const [waitingForOpponent, setWaitingForOpponent] = useState( true )
-    const [status, setStatus] = useState( "" )
-    const [loginError, setLoginError] = useState( false )
-    const [loginErrorMsg, setLoginErrorMsg] = useState( "" )
-    const [joinError, setJoinError] = useState( false )
-    const [otherConnect, setOtherConnect] = useState( false )
+    const [ hasLogin, setHasLogin ] = useState( false )
+    const [ hasStarted, setHasStarted ] = useState( false )
+    const [ registerFail, setRegisterFail ] = useState( false )
+    const [ registerFailMsg, setRegisterFailMsg ] = useState( "" )
+    const [ board, setBoard ] = useState( [] )
+    const [ turn, setTurn ] = useState( '' )
+    const [ myColor, setMyColor ] = useState( '' )
+    const [ focusP, setFocusP ] = useState( [] )
+    const [ winner, setWinner ] = useState( "" )
+    const [ endGame, setEndGame ] = useState( false )
+    const [ name, setName ] = useState( "Player" )
+    const [ opponentName, setOpponentName ] = useState( "Waiting for Opponent" )
+    const [ roomNumber, setRoomNumber ] = useState( "Welcome!" )
+    const [ waitingForOpponent, setWaitingForOpponent ] = useState( true )
+    const [ status, setStatus ] = useState( "" )
+    const [ loginError, setLoginError ] = useState( false )
+    const [ loginErrorMsg, setLoginErrorMsg ] = useState( "" )
+    const [ joinError, setJoinError ] = useState( false )
+    const [ otherConnect, setOtherConnect ] = useState( false )
 
     // jump msg
-    const [messageApi, contextHolder] = message.useMessage()
+    const [ messageApi, contextHolder ] = message.useMessage()
 
     const registerSuccess = () => {
         messageApi.open( {
@@ -163,48 +163,48 @@ const ChessProvider = ( props ) => {
     // sending
     const preview = ( previewPos ) => {
         // get preview board 
-        sendData( ["preview", previewPos] )
+        sendData( [ "preview", previewPos ] )
     }
 
     const move = ( from, to ) => {
         // get moved board 
-        sendData( ["move", { from, to }] )
+        sendData( [ "move", { from, to } ] )
     }
 
     const login = ( name, password ) => {
         // login
-        sendData( ["login", [name, password]] )
+        sendData( [ "login", [ name, password ] ] )
     }
 
     const register = ( name, password ) => {
         // register
-        sendData( ["register", [name, password]] )
+        sendData( [ "register", [ name, password ] ] )
     }
 
     const init = () => {
         // get initial board 
-        sendData( ['init'] )
+        sendData( [ 'init' ] )
     }
 
     const createRoom = () => {
         // first person create a game room
-        sendData( ["createRoom"] )
+        sendData( [ "createRoom" ] )
     }
 
     const joinRoom = ( roomNumber ) => {
         // second person join a room
-        sendData( ["joinRoom", roomNumber] )
+        sendData( [ "joinRoom", roomNumber ] )
     }
 
 
     // receiving
     clientWS.onmessage = ( byteString ) => {
         const { data } = byteString
-        const [task, response] = JSON.parse( data )
+        const [ task, response ] = JSON.parse( data )
         switch ( task ) {
 
             case "rp_login": {
-                const [type, user] = response
+                const [ type, user ] = response
                 if ( type === "Success" ) {
                     setName( user )
                     setHasLogin( true )
@@ -228,7 +228,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "createRoomSuccess": {
-                const [game, playerColor, gameID] = response
+                const [ game, playerColor, gameID ] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -239,7 +239,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "joinRoomSuccess": {
-                const [game, playerColor, gameID] = response
+                const [ game, playerColor, gameID ] = response
                 setHasStarted( true )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -256,7 +256,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "gameStarted": {
-                const [newGame, opName] = response
+                const [ newGame, opName ] = response
                 setWaitingForOpponent( false )
                 setBoard( newGame.board )
                 setTurn( newGame.turn )
@@ -295,7 +295,7 @@ const ChessProvider = ( props ) => {
             }
 
             case "sudden_game": {
-                const [game, opName, gameID, clr] = response
+                const [ game, opName, gameID, clr ] = response
                 setWaitingForOpponent( false )
                 setBoard( game.board )
                 setTurn( game.turn )
@@ -307,43 +307,6 @@ const ChessProvider = ( props ) => {
                 break
             }
         }
-    }
-
-    useEffect( () => {
-        setWinner( checkWinner() )
-    }, [board] )
-
-    const checkWinner = () => {
-        if ( board.length == 0 ) {
-            return ''
-        }
-        let winner = ''
-        let whiteKing = false
-        let blackKing = false
-        for ( let x = 0; x < 8; x++ ) {
-            for ( let y = 0; y < 8; y++ ) {
-                if ( board[x][y].type == 'king' ) {
-                    if ( board[x][y].color == 'w' ) {
-                        whiteKing = true
-                    }
-                    else {
-                        blackKing = true
-                    }
-                }
-            }
-        }
-
-        if ( blackKing == false ) {
-            winner = 'w'
-        }
-        else if ( whiteKing == false ) {
-            winner = 'b'
-        }
-        else {
-            winner = ''
-        }
-
-        return winner
     }
 
     return (
