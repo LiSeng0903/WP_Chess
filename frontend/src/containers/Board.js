@@ -22,6 +22,7 @@ import whitePawnImg from '../imgs/whitePawn.png'
 import whiteQueenImg from '../imgs/whiteQueen.png'
 import whiteRookImg from '../imgs/whiteRook.png'
 
+
 const FullBoardWrapper = styled.div`
     width:100%;
     height:100%;
@@ -136,7 +137,7 @@ const Board = () => {
 
     return (
         <FullBoardWrapper>
-            <LeftWrapper style={{backgroundColor : "transparent"}}>
+            <LeftWrapper style={{ backgroundColor: "transparent" }}>
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "20px" }}>&ensp;Room Number: {roomNumber}</p>
                 {status === "" ? null : <p style={{ alignSelf: "center", fontFamily: "Comic Sans MS", fontSize: "30px", color: myColor !== "w" ? "#B4D4D2" : "#F5DEDE" }}>{status}!</p>}
                 <p style={{ alignSelf: "flex-end", fontFamily: "Comic Sans MS", fontSize: "35px" }}>{name}&ensp;</p>
@@ -175,7 +176,7 @@ const Board = () => {
                     {endGame ? <ResultModal win={myColor == winner} /> : ( myColor == turn ? ( waitingForOpponent == true ? <WaitModal waitingJoin="true" /> : <></> ) : <WaitModal waitingJoin="false" /> )}
                 </BoardWrapper>
             </ChessBoardWrapper>
-            <RightWrapper style={{backgroundColor : "transparent"}}>
+            <RightWrapper style={{ backgroundColor: "transparent" }}>
                 <p style={{ alignSelf: "flex-start", fontFamily: "Comic Sans MS", fontSize: "35px" }}>&ensp;{opponentName}</p>
             </RightWrapper>
             <Modal
