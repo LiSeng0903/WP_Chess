@@ -12,7 +12,7 @@ import { init_test_player } from "./init_data.js"
 // Constant 
 const SERVER_IP = 'localhost'
 // const SERVER_IP = '192.168.0.144'
-const INIT = true
+const INIT = false
 
 //mongoose connection
 mongoose.set( 'strictQuery', false )
@@ -37,7 +37,7 @@ db.once( 'open', () => {
         // store connection 
         let connectionID = uuid()
 
-        connections[connectionID] = {
+        connections[ connectionID ] = {
             playerID: '',
         }
 
