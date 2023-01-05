@@ -11,9 +11,12 @@ import { init_test_player } from "./init_data.js"
 
 // Constant 
 // ! SERVER_IP 改動在這裡 =====================================
+
 const SERVER_IP = 'localhost'
 // const SERVER_IP = 'XXX.XXX.XXX.XXX' <- 你的電腦 IP
+
 // ! SERVER_IP 改動在這裡 =====================================
+
 
 // ! 初始化改動在這裡 =====================================
 const INIT = false
@@ -42,7 +45,7 @@ db.once( 'open', () => {
         // store connection 
         let connectionID = uuid()
 
-        connections[connectionID] = {
+        connections[ connectionID ] = {
             playerID: '',
         }
 
