@@ -49,7 +49,7 @@
 畫面中央會出現 Waiting for opponent to join 的字樣。這時可以將左上角的房間 ID 分享給想一起玩的人，讓他加入遊戲。此例中房間 ID 是 `219772ac-c15b-4cd6-b314-45c030b8d6d0`
 
 ##### 加入遊戲
-在 Enter a Room Number 輸入房間 ID（一定要已經存在的）
+在 Enter a Room Number 輸入房間 ID，接下來點擊 Join 即可加入
 
 ## 每位組員之負責項目
 
