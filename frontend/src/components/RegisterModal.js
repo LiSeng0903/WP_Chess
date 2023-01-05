@@ -25,12 +25,14 @@ const RegisterModal = () => {
     const handleOk = () => {
         register( regName, regPassword )
         setIsModalOpen( false )
+        setRegisterFail( false )
         setRegName( "" )
         setRegPassword( "" )
     }
 
     const handleCancel = () => {
         setIsModalOpen( false )
+        setRegisterFail( false )
         setRegName( "" )
         setRegPassword( "" )
     }
@@ -49,8 +51,8 @@ const RegisterModal = () => {
             <TextStyle type="primary" onClick={showModal}>
                 Register
             </TextStyle>
-            <Modal title="Register a player" open={isModalOpen || registerFail} onOk={handleOk} onCancel={handleCancel} 
-            okButtonProps={{ style: { backgroundColor:"brown" } }}>
+            <Modal title="Register a player" open={isModalOpen || registerFail} onOk={handleOk} onCancel={handleCancel}
+                okButtonProps={{ style: { backgroundColor: "brown" } }}>
                 <Form
                     name="basic"
                     initialValues={{
