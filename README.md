@@ -4,28 +4,30 @@
 + 組別：12 
 + 組長中文姓名：張力升
 + 題目名稱：西洋棋連線對戰遊戲 （原本為棒球紀錄系統，後來改變題目）
-+ Deployed service 網址：
++ Deployed service 網址：（Deploy 失敗）
 + Github Repo 網址： https://github.com/LiSeng0903/WP_Chess.git
 + Demo 影片網址：
 + FB 社團貼文網址：
-描述這個服務在做什麼
++ 這個服務在做什麼：讓玩家可以在線上下西洋棋
 
 ## localhost 安裝與測試之詳細步驟
 此 Application 為 server-client 架構。執行 server process 的電腦必須要完成後端的所有設置；執行 client 的則須完成前端的所有設置。目前只支援在同一個 subnet 下的電腦連線。
 
 ### 安裝
 #### 後端設置
-1. 下載前端所需 package：在 `final/WP_CHESS/backend` 下執行 `yarn install`
+1. 下載前端所需 package：在 `final/WP_CHESS/backend` 下執行 `yarn install`。
 2. 設定 server 執行的 IP，要查看電腦在 LAN 中的 ip 位址，並且修改 `final/WP_CHESS/backend/src/server.js` 中的 `SERVER_IP`，例如 `SERVER_IP = '192.168.1.104'`。
-3. 設定 mongoDB：在 `final/WP_CHESS/backend` 下放入 `.env` 檔案。檔案內容加入 `MONGO_URL=<Your mongo url>`
-4. 設定 server 使用的 PORT：Server process 設定是使用 port 4000，如果您的電腦 port 4000 已經有跑其他 process 的話，可以在 `.env` 檔案中設定希望 server 執行的 port，加入 `PORT=<desired port>`
-5. 初始化資料庫（optinal）：第一次執行可以先初始化 mongodb // not finish
-6. 啟動 server：在 `final/WP_CHESS` 下執行 `yarn backend`。待 terminal 出現 `server is on 4000`, `db connected`, `mongo db connection created` 訊息後代表 server 成功執行
+3. 設定 mongoDB：在 `final/WP_CHESS/backend` 下放入 `.env` 檔案。檔案內容加入 `MONGO_URL=<Your mongo url>`。
+4. 設定 server 使用的 PORT：Server process 設定是使用 port 4000，如果您的電腦 port 4000 已經有跑其他 process 的話，可以在 `.env` 檔案中設定希望 server 執行的 port，加入 `PORT=<desired port>`。
+5. 初始化資料庫（optinal）：可以選擇要不要初始化資料庫，初始化的話資料庫會被清空，剩下三筆測試帳號，建議第一次執行初始化資料庫。接下來 server 重開的話可以不用初始化。
+初始化的作法是將 `final/WP_CHESS/backend/src/server.js` 中的 `INIT` 變數改成 `true`。
+
+6. 啟動 server：在 `final/WP_CHESS` 下執行 `yarn backend`。待 terminal 出現 `server is on 4000`, `db connected`, `mongo db connection created` 訊息後代表 server 成功執行。
 
 #### 前端設置
-1. 下載前端所需 package：在 `final/WP_CHESS/frontend` 下執行 `yarn install`
+1. 下載前端所需 package：在 `final/WP_CHESS/frontend` 下執行 `yarn install`。
 2. 設定 server 執行的 IP，問到執行 server process 電腦的 IP，並且修改 `final/WP_CHESS/frontend/src/containers/hooks/useChess.js` 中的 `SERVER_IP`，例如 `SERVER_IP = '192.168.1.104'`。
-ˇ. 啟動 client：在 `final/WP_CHESS` 下執行 `yarn frontend` 
+3. 啟動 client：在 `final/WP_CHESS` 下執行 `yarn frontend`。 
 
 ### 測試
 #### 登入
@@ -34,6 +36,13 @@
 
 ##### 已註冊
 如果帳號已註冊，那麼可以直接用 User name 及之前註冊時的 password 登入
+
+如果 server 有初始化資料庫，那麼會有三組測試帳號：
+|User|Password|
+|-----|---------|
+Ali|11111111|
+Pui|22222222|
+Lia|33333333|
 
 ##### 尚未註冊
 如果還沒註冊帳號，可以點擊 Register 的按紐，進入註冊介面，在此填入 User name 及 password 即可註冊。（如果名字已經被取過，則無法註冊）
